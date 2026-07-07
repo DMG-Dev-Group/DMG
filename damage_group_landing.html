@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css.css" />
+    <script defer src="script.js"></script>
+  </head>
+  <nav>
+    <div class="nav-logo">
+      <div class="logo-mark">DMG</div>
+      <span class="logo-text">Damage Group</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#">Serviços</a></li>
+      <li><a href="#">Projetos</a></li>
+      <li><a href="#">Stack</a></li>
+      <li><a href="#">Sobre</a></li>
+    </ul>
+    <button class="nav-cta">Contato_</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <canvas id="gridCanvas" class="hero-grid-canvas"></canvas>
+    <div class="hero-light" id="heroLight"></div>
+
+    <p class="hero-eyebrow">Damage Group · 2026</p>
+
+    <h1>
+      Código que<br />
+      <em>causa impacto.</em>
+    </h1>
+
+    <p class="hero-sub">
+      Desenvolvemos software que vai além do funcional — construímos sistemas
+      robustos, escaláveis e difíceis de ignorar.
+    </p>
+
+    <div class="hero-actions">
+      <button
+        class="btn-primary"
+        onclick="
+          sendPrompt('Quero saber mais sobre os serviços da Damage Group')
+        "
+      >
+        Ver nosso trabalho →
+      </button>
+      <button class="btn-ghost">Nossa stack</button>
+    </div>
+
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">12+</div>
+        <div class="stat-label">Projetos entregues</div>
+      </div>
+      <div>
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Foco em resultados</div>
+      </div>
+      <div>
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Possibilidades de inovação</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-inner" id="ticker">
+      <span class="ticker-item"><span>▸</span> Web Development</span>
+      <span class="ticker-item"><span>▸</span> Mobile Apps</span>
+      <span class="ticker-item"><span>▸</span> APIs & Backend</span>
+      <span class="ticker-item"><span>▸</span> Cloud Infrastructure</span>
+      <span class="ticker-item"><span>▸</span> UI/UX Design</span>
+      <span class="ticker-item"><span>▸</span> Code Review</span>
+      <span class="ticker-item"><span>▸</span> Firebase</span>
+      <span class="ticker-item"><span>▸</span> Security Audit</span>
+      <span class="ticker-item"><span>▸</span> Web Development</span>
+      <span class="ticker-item"><span>▸</span> Mobile Apps</span>
+      <span class="ticker-item"><span>▸</span> APIs & Backend</span>
+      <span class="ticker-item"><span>▸</span> Cloud Infrastructure</span>
+      <span class="ticker-item"><span>▸</span> UI/UX Design</span>
+      <span class="ticker-item"><span>▸</span> Code Review</span>
+      <span class="ticker-item"><span>▸</span> Firebase</span>
+      <span class="ticker-item"><span>▸</span> Security Audit</span>
+    </div>
+  </div>
+
+  <!-- SERVICES -->
+  <section class="section">
+    <p class="section-label">O que fazemos</p>
+    <h2 class="section-title">
+      Soluções que entregam resultado<span class="cursor">_</span>
+    </h2>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-num">01</div>
+        <span class="service-icon">⬡</span>
+        <div class="service-name">Desenvolvimento Web</div>
+        <p class="service-desc">
+          Aplicações web de alta performance com arquitetura moderna, escalável
+          e otimizada para crescimento.
+        </p>
+        <span class="service-tag">▸ React · Next.js · Node</span>
+      </div>
+      <div class="service-card">
+        <div class="service-num">02</div>
+        <span class="service-icon">◈</span>
+        <div class="service-name">Apps Mobile</div>
+        <p class="service-desc">
+          Experiências nativas e cross-platform que os usuários realmente querem
+          usar. iOS e Android.
+        </p>
+        <span class="service-tag">▸ Flutter · Swift · Kotlin</span>
+      </div>
+      <div class="service-card">
+        <div class="service-num">03</div>
+        <span class="service-icon">⬡</span>
+        <div class="service-name">APIs & Sistemas</div>
+        <p class="service-desc">
+          Backends robustos, microsserviços e integrações que suportam milhares
+          de requisições por segundo.
+        </p>
+        <span class="service-tag">▸ REST · GraphQL · gRPC</span>
+      </div>
+      <div class="service-card">
+        <div class="service-num">04</div>
+        <span class="service-icon">◈</span>
+        <div class="service-name">Cloud & DevOps</div>
+        <p class="service-desc">
+          Infraestrutura como código, pipelines CI/CD e monitoramento para
+          operações sem surpresas.
+        </p>
+        <span class="service-tag">▸ AWS · GCP · Docker · K8s</span>
+      </div>
+      <div class="service-card">
+        <div class="service-num">05</div>
+        <span class="service-icon">⬡</span>
+        <div class="service-name">UI/UX Design</div>
+        <p class="service-desc">
+          Interfaces que comunicam, convertem e deixam o usuário com vontade de
+          voltar amanhã.
+        </p>
+        <span class="service-tag">▸ Figma · Design System</span>
+      </div>
+      <div class="service-card">
+        <div class="service-num">06</div>
+        <span class="service-icon">◈</span>
+        <div class="service-name">Consultoria Técnica</div>
+        <p class="service-desc">
+          Revisão de arquitetura, refatoração de legado e apoio para times que
+          precisam avançar rápido.
+        </p>
+        <span class="service-tag">▸ Audit · Refactor · Scale</span>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="sectioncard">
+  <p class="section-label">Quem somos</p>
+  <h2 class="section-title">Os fundadores da DMG Group<span class="cursor">_</span></h2>
+  <div class="card-display">
+    <div class="card" id="d">
+      <div class="letter">D</div>
+      <img src="images/dan.png" class="photo">  
+    </div>
+    <div class="card" id="m">
+      <div class="letter">M</div>
+      <img src="images/migo.png" class="photo">
+    </div>
+    <div class="card" id="g">
+      <div class="letter">G</div>
+      <img src="images/guigui.png" class="photo" id="gui">
+    </div>
+  </div>
+</section>
+
+  <!-- ABOUT STRIP -->
+  <div class="about-strip">
+    <div class="about-code">
+      <pre><span class="code-cmt">// damage group manifest</span>
+
+<span class="code-key">const</span> <span class="code-val">dmg</span> = {
+  <span class="code-key">name:</span>    <span class="code-str">"Damage Group"</span>,
+  <span class="code-key">sigla:</span>   <span class="code-str">"DMG"</span>,
+  <span class="code-key">missao:</span>  <span class="code-str">"causar impacto"</span>,
+  <span class="code-key">motto:</span>   <span class="code-str">"if it ain't broke,\n          build better"</span>,
+  <span class="code-key">stack:</span>   [<span class="code-str">"web"</span>, <span class="code-str">"mobile"</span>,
+            <span class="code-str">"cloud"</span>, <span class="code-str">"tudo"</span>],
+  <span class="code-key">deadlines:</span> <span class="code-str">"entregues"</span>,
+}
+
+<span class="code-cmt">// output: projetos que funcionam</span></pre>
+    </div>
+
+    <div class="about-text">
+      <p class="section-label" style="margin-bottom: 20px">Quem somos</p>
+      <h2>
+        Um grupo que<br />constrói
+        <span style="color: var(--red)">de verdade.</span>
+      </h2>
+      <p>
+        A <strong>Damage Group</strong> nasceu da frustração com software
+        medíocre. Somos desenvolvedores que se importam com cada linha de
+        código, cada decisão de arquitetura e cada experiência de usuário.
+      </p>
+      <p>
+        Não terceirizamos a responsabilidade. Quando você contrata a DMG, está
+        contratando pessoas que vão
+        <strong>perder o sono pelo seu produto</strong> tanto quanto você.
+      </p>
+
+      <div class="tech-list">
+        <span class="tech-pill">TypeScript</span>
+        <span class="tech-pill">Python</span>
+        <span class="tech-pill">Rust</span>
+        <span class="tech-pill">Go</span>
+        <span class="tech-pill">React</span>
+        <span class="tech-pill">Next.js</span>
+        <span class="tech-pill">Flutter</span>
+        <span class="tech-pill">PostgreSQL</span>
+        <span class="tech-pill">Redis</span>
+        <span class="tech-pill">Firebase</span>
+        <span class="tech-pill">AWS</span>
+        <span class="tech-pill">Docker</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <section class="section">
+    <p class="section-label">Portfólio</p>
+    <h2 class="section-title">
+      Trabalhos que falam por si<span class="cursor">_</span>
+    </h2>
+
+    <div class="projects-grid">
+      <div class="project-card featured">
+        <div>
+          <div class="project-type">Projeto destaque · 2026</div>
+          <div class="project-name">NexusOS — Plataforma SaaS</div>
+          <p class="project-desc">
+            Sistema de gestão empresarial full-stack com autenticação
+            multifator, dashboards em tempo real, integrações via webhook e
+            arquitetura de microsserviços para escalar de 100 para 100k usuários
+            sem refactor.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Next.js</span>
+            <span class="project-tag">Node.js</span>
+            <span class="project-tag">PostgreSQL</span>
+            <span class="project-tag">Redis</span>
+            <span class="project-tag">AWS</span>
+          </div>
+        </div>
+        <div class="project-arrow">→</div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-type">Mobile · iOS & Android</div>
+        <div class="project-name">VaultPay</div>
+        <p class="project-desc">
+          App de pagamentos com biometria, carteira digital e histórico offline.
+          4.8★ na App Store.
+        </p>
+        <div class="project-tags">
+          <span class="project-tag">Flutter</span>
+          <span class="project-tag">Firebase</span>
+          <span class="project-tag">Stripe</span>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-type">API & Backend · 2026</div>
+        <div class="project-name">CoreLink API</div>
+        <p class="project-desc">
+          Gateway de integração entre 12 sistemas legados. 99.98% uptime em 8
+          meses de produção.
+        </p>
+        <div class="project-tags">
+          <span class="project-tag">Go</span>
+          <span class="project-tag">gRPC</span>
+          <span class="project-tag">Kubernetes</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Pronto para causar <span style="color: var(--red)">dano?</span></h2>
+    <p>
+      Vamos conversar sobre seu próximo projeto. Sem enrolação — direto ao
+      ponto.
+    </p>
+    <div class="cta-actions">
+      <button
+        class="btn-primary"
+        onclick="sendPrompt('Quero contratar a Damage Group para um projeto')"
+      >
+        Iniciar projeto →
+      </button>
+      <button class="btn-ghost">Ver portfólio</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">
+      <strong>DAMAGE GROUP</strong>
+      DMG · Software Development
+    </div>
+    <ul class="footer-links">
+      <li><a href="#">GitHub</a></li>
+      <li><a href="#">LinkedIn</a></li>
+      <li><a href="#">Contato</a></li>
+    </ul>
+    <span class="footer-copy">© 2026 DMG. All rights reserved.</span>
+  </footer>
+</html>
