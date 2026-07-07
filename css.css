@@ -102,7 +102,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 80px 40px 60px;
+    padding: 80px 40px 60px 60px;
     position: relative;
     overflow: hidden;
   }
@@ -116,36 +116,6 @@
 
   .hero-light {
     display: none;
-  }
-
-  .hero-glow {
-    position: absolute;
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(115, 14, 33, 0.25) 0%, transparent 70%);
-    top: -100px;
-    right: -100px;
-    pointer-events: none;
-  }
-
-  .hero-eyebrow {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--red);
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .hero-eyebrow::before {
-    content: '';
-    display: block;
-    width: 32px;
-    height: 1px;
-    background: var(--red);
   }
 
   .hero h1 {
@@ -237,8 +207,8 @@
     letter-spacing: 0.5px;
   }
 
-  /* TICKER */
-  .ticker {
+  /* CARROSEL */
+  .carrosel {
     border-top: 1px solid #1a1a1a;
     border-bottom: 1px solid #1a1a1a;
     background: var(--off);
@@ -247,12 +217,12 @@
     white-space: nowrap;
   }
 
-  .ticker-inner {
+  .carrosel-inner {
     display: inline-flex;
-    animation: ticker 18s linear infinite;
+    animation: carrosel 18s linear infinite;
   }
 
-  .ticker-item {
+  .carrosel-item {
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 3px;
@@ -261,11 +231,24 @@
     padding: 0 40px;
   }
 
-  .ticker-item span {
+  .carrosel-item span {
     color: var(--red);
     margin-right: 8px;
   }
 
+  /* CARROSEL */
+  .card-display{
+    width: 100%;
+    padding: 10px;
+    margin-top: 60px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    transition: all .4s ease;
+  }
+
+  /* CARROSEL */
   .card-display{
     width: 100%;
     padding: 10px;
@@ -307,7 +290,6 @@
     mix-blend-mode: overlay;
 
   }
-
   .card:hover{
     transform: scale(1.05);
   }
@@ -315,13 +297,14 @@
   .card.active{
     transform: scale(1.20);
     z-index: 2;
+    overflow: visible;
+    background: none;
   }
 
   .card.inactive{
     transform: scale(0.8);
     opacity: 0.1;
     margin: 30px;
-    filter: blur(3px);
   }
   #gui{
     transform: scaleX(-1);
@@ -331,10 +314,153 @@
     top: 10px;
     font-size: 260px;
   }
-  @keyframes ticker {
+  @keyframes carrosel {
     from { transform: translateX(0); }
     to { transform: translateX(-50%); }
   }
+
+    /* ===== MEMBERS SECTION ===== */
+
+  /* Os painéis ficam posicionados absolutamente dentro do .card */
+  .member-info {
+    position: absolute;
+    top: 45%;
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 150%;
+    height: 400px;
+    background: rgba(8, 8, 8, 0.72);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(192, 24, 26, 0.3);
+    padding: 24px 20px;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  /* Card D (esquerdo) — painel à DIREITA do card, fora dele */
+  .info-right {
+    left: calc(100% + 16px);
+    transform: translateY(-50%) translateX(12px);
+  }
+
+  .info-right.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  /* Card M (central) — painel de nome/idade à ESQUERDA */
+  .info-split-left {
+    right: calc(100% + 16px);
+    transform: translateY(-50%) translateX(-12px);
+    width: 400px;
+  }
+
+  .info-split-left.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  /* Card M (central) — painel de stack à DIREITA */
+  .info-split-right {
+    left: calc(100% + 16px);
+    transform: translateY(-50%) translateX(12px);
+    width: 400px;
+  }
+
+  .info-split-right.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  /* Card G (direito) — painel à ESQUERDA do card, fora dele */
+  .info-left {
+    right: calc(100% + 16px);
+    transform: translateY(-50%) translateX(-12px);
+  }
+
+  .info-left.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  /* Label tipo "// membro" */
+  .info-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    display: block;
+  }
+
+  /* Nome do membro */
+  .info-name {
+    font-family: var(--sans);
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    color: var(--white);
+    margin: 0;
+  }
+
+  /* Idade */
+  .info-age {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    display: block;
+  }
+
+  /* Divisor */
+  .info-divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(192, 24, 26, 0.3);
+  }
+
+  /* Label "Stack" */
+  .info-stack-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--red);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    display: block;
+  }
+
+  /* Pills de stack */
+  .info-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .info-pill {
+    background: rgba(192, 24, 26, 0.08);
+    border: 1px solid rgba(192, 24, 26, 0.25);
+    color: #c47070;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 4px 10px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .info-pill:hover {
+    border-color: var(--red);
+    color: var(--white);
+  }
+
 
   /* SERVICES */
   .section {
