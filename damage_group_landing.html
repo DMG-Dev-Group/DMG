@@ -25,8 +25,6 @@
     <canvas id="gridCanvas" class="hero-grid-canvas"></canvas>
     <div class="hero-light" id="heroLight"></div>
 
-    <p class="hero-eyebrow">Damage Group · 2026</p>
-
     <h1>
       Código que<br />
       <em>causa impacto.</em>
@@ -65,25 +63,25 @@
     </div>
   </section>
 
-  <!-- TICKER -->
-  <div class="ticker">
-    <div class="ticker-inner" id="ticker">
-      <span class="ticker-item"><span>▸</span> Web Development</span>
-      <span class="ticker-item"><span>▸</span> Mobile Apps</span>
-      <span class="ticker-item"><span>▸</span> APIs & Backend</span>
-      <span class="ticker-item"><span>▸</span> Cloud Infrastructure</span>
-      <span class="ticker-item"><span>▸</span> UI/UX Design</span>
-      <span class="ticker-item"><span>▸</span> Code Review</span>
-      <span class="ticker-item"><span>▸</span> Firebase</span>
-      <span class="ticker-item"><span>▸</span> Security Audit</span>
-      <span class="ticker-item"><span>▸</span> Web Development</span>
-      <span class="ticker-item"><span>▸</span> Mobile Apps</span>
-      <span class="ticker-item"><span>▸</span> APIs & Backend</span>
-      <span class="ticker-item"><span>▸</span> Cloud Infrastructure</span>
-      <span class="ticker-item"><span>▸</span> UI/UX Design</span>
-      <span class="ticker-item"><span>▸</span> Code Review</span>
-      <span class="ticker-item"><span>▸</span> Firebase</span>
-      <span class="ticker-item"><span>▸</span> Security Audit</span>
+  <!-- CARROSEL -->
+  <div class="carrosel">
+    <div class="carrosel-inner" id="ticker">
+      <span class="carrosel-item"><span>▸</span> Mobile Apps</span>
+      <span class="carrosel-item"><span>▸</span> APIs & Backend</span>
+      <span class="carrosel-item"><span>▸</span> Cloud Infrastructure</span>
+      <span class="carrosel-item"><span>▸</span> UI/UX Design</span>
+      <span class="carrosel-item"><span>▸</span> Web Development</span>
+      <span class="carrosel-item"><span>▸</span> Code Review</span>
+      <span class="carrosel-item"><span>▸</span> Firebase</span>
+      <span class="carrosel-item"><span>▸</span> Security Audit</span>
+      <span class="carrosel-item"><span>▸</span> Web Development</span>
+      <span class="carrosel-item"><span>▸</span> Mobile Apps</span>
+      <span class="carrosel-item"><span>▸</span> APIs & Backend</span>
+      <span class="carrosel-item"><span>▸</span> Cloud Infrastructure</span>
+      <span class="carrosel-item"><span>▸</span> UI/UX Design</span>
+      <span class="carrosel-item"><span>▸</span> Code Review</span>
+      <span class="carrosel-item"><span>▸</span> Firebase</span>
+      <span class="carrosel-item"><span>▸</span> Security Audit</span>
     </div>
   </div>
 
@@ -158,22 +156,79 @@
     </div>
   </div>
 </section>
+
+<!-- MEMBERS SECTION -->
 <section class="sectioncard">
   <p class="section-label">Quem somos</p>
   <h2 class="section-title">Os fundadores da DMG Group<span class="cursor">_</span></h2>
+
   <div class="card-display">
+
+    <!-- Card D — esquerdo: info à direita (dentro do card, sobreposta) -->
     <div class="card" id="d">
       <div class="letter">D</div>
-      <img src="images/dan.png" class="photo">  
+      <img src="images/dan.png" class="photo">
+      <!-- Painel: tudo à direita do card -->
+      <div class="member-info info-right" id="info-d">
+        <span class="info-label">// membro</span>
+        <h3 class="info-name">Daniel</h3>
+        <span class="info-age">22 anos</span>
+        <div class="info-divider"></div>
+        <span class="info-stack-label">Stack</span>
+        <div class="info-pills">
+          <span class="info-pill">React</span>
+          <span class="info-pill">Node.js</span>
+          <span class="info-pill">TypeScript</span>
+          <span class="info-pill">PostgreSQL</span>
+          <span class="info-pill">Docker</span>
+        </div>
+      </div>
     </div>
+
+    <!-- Card M — central: nome/idade à esquerda, stack à direita -->
     <div class="card" id="m">
       <div class="letter">M</div>
       <img src="images/migo.png" class="photo">
+      <!-- Painel esquerdo: nome + idade -->
+      <div class="member-info info-split-left" id="info-m-left">
+        <span class="info-label">// membro</span>
+        <h3 class="info-name">Miguel</h3>
+        <span class="info-age">21 anos</span>
+      </div>
+      <!-- Painel direito: stack -->
+      <div class="member-info info-split-right" id="info-m-right">
+        <span class="info-stack-label">Stack</span>
+        <div class="info-pills">
+          <span class="info-pill">Python</span>
+          <span class="info-pill">Flutter</span>
+          <span class="info-pill">Firebase</span>
+          <span class="info-pill">Go</span>
+          <span class="info-pill">AWS</span>
+        </div>
+      </div>
     </div>
+
+    <!-- Card G — direito: info à esquerda -->
     <div class="card" id="g">
       <div class="letter">G</div>
       <img src="images/guigui.png" class="photo" id="gui">
+      <!-- Painel: tudo à esquerda do card -->
+      <div class="member-info info-left" id="info-g">
+        <span class="info-label">// membro</span>
+        <h3 class="info-name">Guilherme</h3>
+        <span class="info-age">23 anos</span>
+        <div class="info-divider"></div>
+        <span class="info-stack-label">Stack</span>
+        <div class="info-pills">
+          <span class="info-pill">Rust</span>
+          <span class="info-pill">Next.js</span>
+          <span class="info-pill">Redis</span>
+          <span class="info-pill">Kubernetes</span>
+          <span class="info-pill">GraphQL</span>
+        </div>
+      </div>
     </div>
+
   </div>
 </section>
 

@@ -1,3 +1,5 @@
+const cards = document.querySelectorAll(".card");
+
 // Lajes pretas sólidas que se abrem para revelar luz vermelha por baixo
 class GridTile {
   constructor(x, y, gridSize) {
@@ -101,7 +103,7 @@ class GridSystem {
   createGrid() {
     this.tiles = [];
     // Criar grid que cobre a área do hero com preenchimento total
-    const heroHeight = window.innerHeight * 0.88; // 88vh
+    const heroHeight = window.innerHeight * 0.90; // 90vh
     
     for (let y = 0; y <= heroHeight; y += this.gridSize) {
       for (let x = 0; x <= window.innerWidth; x += this.gridSize) {
@@ -184,28 +186,32 @@ document.addEventListener('DOMContentLoaded', () => {
     new GridSystem(canvas);
   }
 
-  // Manter a funcionalidade dos cards
-  const cards = document.querySelectorAll(".card");
-  cards.forEach(card => {
-    card.addEventListener("click", () => {
-      if (card.classList.contains("active")) {
-        cards.forEach(c => {
-          c.classList.remove("active", "inactive");
-        });
-        return;
-      }
+/* ── Lógica de clique nos cards ── */
+cards.forEach(card => {
+  card.addEventListener("click", () => {
+    const isActive = card.classList.contains("active");
 
-      cards.forEach(c => {
-        c.classList.remove("active", "inactive");
-      });
-
-      card.classList.add("active");
-
-      cards.forEach(c => {
-        if (c !== card) {
-          c.classList.add("inactive");
-        }
-      });
+    /* Remove estados de todos os cards e esconde todos os painéis */
+    cards.forEach(c => {
+      c.classList.remove("active", "inactive");
+      c.querySelectorAll(".member-info").forEach(p => p.classList.remove("visible"));
     });
+
+    if (isActive) {
+      /* Segundo clique: fecha tudo */
+      return;
+    }
+
+    /* Ativa o card clicado */
+    card.classList.add("active");
+
+    /* Inativa os demais */
+    cards.forEach(c => {
+      if (c !== card) c.classList.add("inactive");
+    });
+
+    /* Exibe os painéis do card clicado */
+    card.querySelectorAll(".member-info").forEach(p => p.classList.add("visible"));
   });
+});
 });
