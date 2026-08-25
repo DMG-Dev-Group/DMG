@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   DMG — Damage Group · Design System
+   Dark cinematic + neon red. Black is the stage, red is the only light.
+   Theme lock: DARK only (see brief §3). One accent: --color-red.
+   ========================================================================== */
+
+@theme {
+  /* --- Surfaces (dark) --- */
+  --color-void: #050506; /* the absolute black where the 3D breathes */
+  --color-carbon: #0c0c0e; /* base surface */
+  --color-graphite: #141417; /* cards, panels */
+  --color-hairline: rgba(255, 255, 255, 0.08); /* thin borders, dividers */
+
+  /* --- Red (the brand's light, rationed) --- */
+  --color-red: #ff1e1e; /* neon primary — CTA, glow, live accent */
+  --color-red-core: #e10600; /* flat intense red — logo, climax blocks */
+  --color-bordo: #5a0a0f; /* deep red — depth, gradients */
+  --color-red-glow: rgba(255, 30, 30, 0.45); /* bloom / glow */
+
+  /* --- Neutrals (light) --- */
+  --color-white: #ffffff;
+  --color-bone: #edecef; /* primary text (broken white, less fatiguing) */
+  --color-ash: #8a8a93; /* secondary text, metadata, HUD */
+
+  /* --- Type ---
+     next/font injects --font-space (display+body) and --font-geist-mono (HUD). */
+  --font-sans: var(--font-space), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* --- Radius — single scale (Shape Consistency Lock) --- */
+  --radius-panel: 12px;
+
+  /* --- Motion easing --- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-void);
+  color: var(--color-bone);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--color-red);
+  color: #fff;
+  text-shadow: none;
+}
+
+/* Focus visibility (a11y) — a red ring that reads on the void */
+:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Dark, minimal scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-void);
+}
+::-webkit-scrollbar-thumb {
+  background: #1c1c20;
+  border-radius: 999px;
+  border: 2px solid var(--color-void);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2a2a30;
+}
+
+/* ==========================================================================
+   Signature utilities
+   ========================================================================== */
+
+/* Red incandescent text glow (the "neon" of the brand) */
+@utility glow-red {
+  text-shadow:
+    0 0 18px var(--color-red-glow),
+    0 0 42px rgba(255, 30, 30, 0.22);
+}
+
+/* Chamfered corners — cut top-right + bottom-left (tech signature).
+   Reserved for the primary CTA and HUD chips (documented exception to the
+   12px panel radius). */
+@utility clip-corner {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% 100%,
+    10px 100%,
+    0 calc(100% - 10px)
+  );
+}
+
+/* HUD label typography — mono, tracked out, ash */
+@utility hud {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-ash);
+}
+
+/* Radial red bloom, breathing behind climax / CTA moments */
+@utility bloom-red {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 30, 30, 0.18),
+    rgba(90, 10, 15, 0.06) 45%,
+    transparent 72%
+  );
+}
+
+/* ==========================================================================
+   Core poster (CSS crystal) — the static/fallback rendition of the 3D core.
+   Doubles as the mobile / reduced-motion / save-data poster (brief §4).
+   ========================================================================== */
+
+@keyframes dmg-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes dmg-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes dmg-glitch-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+    clip-path: inset(45% 0 45% 0);
+    filter: saturate(2);
+  }
+  55% {
+    clip-path: inset(0 0 0 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: none;
+  }
+}
+
+@keyframes dmg-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes dmg-vein {
+  0%,
+  100% {
+    opacity: 0.55;
+    filter: drop-shadow(0 0 10px var(--color-red-glow));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 22px var(--color-red-glow));
+  }
+}
+
+/* ==========================================================================
+   Climax RGB-split glitch text — red + white (on-brand, no cyan). The offset is
+   driven by a --g variable (0..1..0 across the pinned climax scroll).
+   ========================================================================== */
+
+.glitch-text {
+  position: relative;
+}
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.glitch-text::before {
+  color: var(--color-red);
+  transform: translate(calc(var(--g, 0) * 7px), calc(var(--g, 0) * -2px));
+  opacity: calc(var(--g, 0) * 0.9);
+  mix-blend-mode: screen;
+}
+.glitch-text::after {
+  color: var(--color-white);
+  transform: translate(calc(var(--g, 0) * -7px), calc(var(--g, 0) * 2px));
+  opacity: calc(var(--g, 0) * 0.5);
+  mix-blend-mode: screen;
+}
+
+/* ==========================================================================
+   Reduced motion — global safety net (brief §8 / §10)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
