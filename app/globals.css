@@ -185,6 +185,42 @@ body {
   }
 }
 
+/* ==========================================================================
+   Intro / splash — portada do CNM (`style.css` L1607+). Vive aqui e não em
+   utilities Tailwind porque anima atributos de SVG (stroke, dash) e um filtro
+   que o GSAP sobrescreve em runtime.
+   ========================================================================== */
+
+@keyframes dmg-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Estado inicial de cada traço do wordmark: contorno vermelho, sem preenchimento
+   e sem glow. O GSAP assume a partir daqui (dashoffset → 0, depois o drop-shadow). */
+#dmg-splash .dmg-path {
+  stroke: var(--color-red-core);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: transparent;
+  filter: drop-shadow(0 0 0 var(--color-red-core));
+}
+
+/* Sem animação, a splash não desenha nada — mostra o wordmark já resolvido. */
+@media (prefers-reduced-motion: reduce) {
+  #dmg-splash .dmg-path {
+    fill: var(--color-red-core);
+    stroke: none;
+  }
+}
+
 @keyframes dmg-vein {
   0%,
   100% {

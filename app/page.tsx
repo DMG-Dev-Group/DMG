@@ -1,6 +1,6 @@
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
-import { Preloader } from "@/components/sections/preloader";
+import { IntroSplash } from "@/components/intro/intro-splash";
 import { Hero } from "@/components/sections/hero";
 import { Manifesto } from "@/components/sections/manifesto";
 import { Servicos } from "@/components/sections/servicos";
@@ -14,7 +14,7 @@ import { DamageScroll } from "@/components/scroll/damage-scroll";
 export default function Home() {
   return (
     <>
-      <Preloader />
+      <IntroSplash />
       <DamageScroll />
       <Nav />
       <main>

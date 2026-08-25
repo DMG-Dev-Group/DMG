@@ -10,12 +10,21 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
  * stays in lockstep with the smoothed scroll position. Disabled entirely under
  * prefers-reduced-motion (native scroll, no hijack).
  */
+// Instância única do Lenis. Exposta porque a intro precisa pausar o scroll
+// enquanto a splash cobre a tela — `overflow: hidden` não segura o Lenis.
+let lenisInstance: Lenis | null = null;
+
+export function getLenis(): Lenis | null {
+  return lenisInstance;
+}
+
 export function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     gsap.registerPlugin(ScrollTrigger);
     const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
+    lenisInstance = lenis;
     lenis.on("scroll", ScrollTrigger.update);
 
     const onTick = (time: number) => lenis.raf(time * 1000);
@@ -37,6 +46,7 @@ export function SmoothScroll() {
       window.removeEventListener("load", refresh);
       gsap.ticker.remove(onTick);
       lenis.destroy();
+      lenisInstance = null;
     };
   }, []);
 
