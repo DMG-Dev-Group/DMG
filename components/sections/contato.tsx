@@ -1,52 +1,38 @@
-import { MagneticButton } from "@/components/ui/magnetic-button";
+import { Mail } from "lucide-react";
 import { HudTag } from "@/components/ui/hud";
-import { SplitReveal } from "@/components/motion/reveal";
 
 /**
- * Contato — the closing CTA. The core is (conceptually) recomposed and calm; a
- * red bloom breathes behind. Honest CTA: opens the user's mail client (no fake
- * form submission).
+ * Contato — a saída direta, de propósito discreta (Q22).
+ *
+ * O CTA grande é o do clímax, logo acima, e o funil principal é o configurador
+ * de orçamento. Esta faixa existe para quem não quer montar orçamento nenhum e
+ * só quer mandar uma mensagem. Se ela crescer, começa a competir com o
+ * configurador — e o configurador é que qualifica o lead.
+ *
+ * TODO(DMG) Q22b: se houver um WhatsApp oficial da DMG, ele entra aqui ao
+ * lado do email.
  */
 export function Contato() {
   return (
-    <section id="contato" className="relative overflow-hidden py-32 md:py-48">
-      {/* Breathing red bloom */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[90vw] w-[90vw] max-h-[820px] max-w-[820px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[100px] motion-safe:animate-[dmg-pulse_6s_ease-in-out_infinite]"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(255,30,30,0.30), rgba(120,12,18,0.10) 45%, transparent 70%)",
-        }}
-      />
-
-      <div className="relative mx-auto flex max-w-[1400px] flex-col items-center px-6 text-center md:px-10">
-        <HudTag className="mb-8">[ contato ]</HudTag>
-        <SplitReveal
-          as="h2"
-          className="max-w-4xl text-balance text-5xl font-bold leading-[0.98] tracking-tight text-bone md:text-7xl lg:text-8xl"
-        >
-          Vamos construir algo de{" "}
-          <span className="glow-red text-white">alto nível.</span>
-        </SplitReveal>
-        <p className="mt-8 max-w-md text-base leading-relaxed text-ash md:text-lg">
-          Conta o que você tem em mente. A gente responde rápido e sem enrolação.
-        </p>
-
-        <div className="mt-12">
-          <MagneticButton
-            href="mailto:dmggroupdev@gmail.com?subject=Projeto%20com%20a%20DMG"
-            variant="primary"
-          >
-            Iniciar conversa
-          </MagneticButton>
+    <section id="contato" className="border-t border-hairline">
+      <div className="mx-auto flex max-w-[1400px] flex-col gap-5 px-6 py-14 md:flex-row md:items-center md:justify-between md:px-10">
+        <div>
+          <HudTag>[ contato ]</HudTag>
+          <p className="mt-3 text-lg text-bone">
+            Prefere falar direto? Sem formulário, sem orçamento.
+          </p>
         </div>
 
         <a
-          href="mailto:dmggroupdev@gmail.com"
-          className="mt-8 font-mono text-sm tracking-wide text-ash transition-colors hover:text-bone"
+          href="mailto:dmggroupdev@gmail.com?subject=Projeto%20com%20a%20DMG"
+          className="group inline-flex items-center gap-3 font-mono text-sm text-ash transition-colors hover:text-bone"
         >
+          <Mail className="h-4 w-4 text-red" strokeWidth={1.6} />
           dmggroupdev@gmail.com
+          <span
+            aria-hidden
+            className="h-px w-8 bg-red transition-all duration-300 group-hover:w-12"
+          />
         </a>
       </div>
     </section>

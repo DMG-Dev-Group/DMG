@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { climaxScroll } from "@/lib/climax-scroll";
 import { CanvasBoundary } from "@/components/core/canvas-boundary";
 import { HudTag } from "@/components/ui/hud";
+import { MagneticButton } from "@/components/ui/magnetic-button";
 
 const ShardsCanvas = dynamic(() => import("@/components/core/shards-canvas"), {
   ssr: false,
@@ -74,21 +75,31 @@ export function Climax() {
           </div>
         )}
 
-        {/* Concept phrase with RGB-split glitch */}
+        {/* O CTA final do site antigo, com o glitch RGB por cima
+            (docs/0001 §5, linha 11): a copy é a de lá, o efeito é daqui. */}
         <div
           ref={glitch}
           className="relative z-10 flex flex-col items-center px-6 text-center"
         >
           <HudTag className="mb-6">[ controlled damage ]</HudTag>
           <h2
-            className="glitch-text text-5xl font-bold uppercase leading-[0.95] tracking-tight text-bone md:text-8xl"
-            data-text="Dano controlado"
+            className="glitch-text text-5xl font-bold leading-[0.95] tracking-tight text-bone md:text-8xl"
+            data-text="Pronto para causar dano?"
           >
-            Dano controlado
+            Pronto para causar <span className="text-red">dano?</span>
           </h2>
           <p className="mt-7 max-w-md text-base leading-relaxed text-ash md:text-lg">
-            Ordem que nasce de quebrar o esperado.
+            Vamos conversar sobre seu próximo projeto. Sem enrolação — direto
+            ao ponto.
           </p>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+            <MagneticButton href="#servicos" variant="primary">
+              Iniciar projeto →
+            </MagneticButton>
+            <MagneticButton href="#projetos" variant="ghost">
+              Ver portfólio
+            </MagneticButton>
+          </div>
         </div>
       </div>
     </section>
