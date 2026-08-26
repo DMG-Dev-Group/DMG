@@ -27,7 +27,18 @@ declare global {
 }
 
 const SEEN_KEY = "dmg_intro_seen";
-const FAILSAFE_MS = 7000;
+
+/**
+ * Rede de segurança: revela o conteúdo mesmo se a animação travar.
+ *
+ * O CNM usava 7s, mas a intro completa dele leva ~7,7s (3,5s de desenho + 0,6s
+ * de stagger + 1,1s de subtext + 1,5s de hold + 1s de fade). Ou seja: o
+ * failsafe cortava a própria animação 0,7s antes do fim, e o `console.warn` de
+ * "timeout" aparecia em toda primeira visita. Aqui o teto é folgado o
+ * suficiente para nunca competir com o timeline — ele só entra em cena quando
+ * algo de fato quebrou.
+ */
+const FAILSAFE_MS = 11000;
 
 // Durações do CNM, mantidas 1:1 (docs/0001 §2).
 const T = {

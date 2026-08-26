@@ -151,11 +151,104 @@ portfólio). O nome do arquivo é citado no componente ou no `data/` da seção.
 > Confirmar o domínio real antes de publicar — links de OG e imagens absolutas
 > saem errados se estiver incorreto.
 
-## ⏳ Chaves de API e variáveis de ambiente
+## Configurador de orçamento
 
-A definir quando o configurador for construído (Supabase + email transacional).
-Nenhum segredo entra no repositório: `.env*` está no `.gitignore` e o projeto
-vai trazer um `.env.example` com os nomes das variáveis, sem valores.
+O funil principal do site. Três arquivos:
+
+| Arquivo | Responsabilidade |
+|---|---|
+| `components/ui/service-modal.tsx` | A interface: os dois níveis, o total ao vivo, o formulário. |
+| `app/api/leads/route.ts` | Recebe o POST: honeypot, validação, rate limit, recálculo. |
+| `lib/lead-store.ts` | As saídas: gravar no Supabase e avisar a DMG por email. |
+
+Detalhe que importa: **o total é recalculado no servidor**, a partir dos ids
+enviados. O valor que o navegador mostrou é descartado. Ninguém fecha um
+projeto de R$ 10.000 por R$ 1 mexendo no devtools.
+
+O modal e a API chamam a mesma função (`lib/orcamento.ts`), então a tela, o
+banco e o email nunca divergem.
+
+### Chaves de API e variáveis de ambiente
+
+Copie `.env.example` para `.env.local` e preencha. **Nenhum segredo entra no
+repositório** — `.gitignore` bloqueia `.env*` (com exceção do `.env.example`,
+que não tem valores).
+
+Sem as variáveis o site sobe normal e o formulário aparece, mas o envio
+responde erro e mostra o email direto da DMG. Nada quebra; só não registra.
+
+**Supabase** (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`)
+1. Crie um projeto em [supabase.com](https://supabase.com).
+2. Rode o SQL abaixo no SQL Editor.
+3. Copie URL e *service role key* de Project Settings → API.
+
+> ⚠️ A *service role key* ignora RLS e dá acesso total ao banco. Ela só pode
+> viver no servidor (é lida em `lib/lead-store.ts`, que nunca vai pro
+> navegador). Nunca coloque num `NEXT_PUBLIC_*`.
+
+```sql
+create table public.leads (
+  id uuid primary key default gen_random_uuid(),
+  criado_em timestamptz not null default now(),
+
+  categoria_id text not null,
+  categoria_nome text not null,
+  item_id text,
+  item_nome text,
+
+  modulos jsonb not null default '[]',
+  multiplicadores jsonb not null default '[]',
+  subtotal numeric,
+  total numeric,
+  sob_orcamento boolean not null default false,
+  plano_recorrente text,
+
+  comentario text,
+  nome text not null,
+  whatsapp text not null,
+  email text not null,
+  empresa text
+);
+
+-- Sem policy nenhuma: só a service role (o servidor) entra. Se algum dia o
+-- site precisar ler leads pelo navegador, aí sim cria policy — hoje não
+-- precisa, e "sem policy" é a configuração mais segura.
+alter table public.leads enable row level security;
+
+create index leads_criado_em_idx on public.leads (criado_em desc);
+```
+
+**Email** (`RESEND_API_KEY`, `LEAD_EMAIL_FROM`, `LEAD_EMAIL_TO`)
+1. Crie conta em [resend.com](https://resend.com) e gere uma API key.
+2. Verifique o domínio da DMG em Domains. **Antes disso o Resend só entrega
+   para o email dono da conta** — teste com ele até a verificação sair.
+3. `LEAD_EMAIL_FROM` precisa usar o domínio verificado; `LEAD_EMAIL_TO` é
+   quem recebe o aviso.
+
+O email já vai com `reply_to` no email do lead: responder cai direto no
+cliente, sem copiar endereço à mão.
+
+Trocar Resend por SendGrid (ou outro) é reescrever o corpo de `notificarDMG`
+em `lib/lead-store.ts`. Nada mais no projeto sabe qual serviço é.
+
+### Proteções contra spam
+
+| Camada | Onde | Como funciona |
+|---|---|---|
+| Honeypot | campo `website`, escondido | Bot preenche, gente não. Responde 200 pro bot não aprender que foi barrado. |
+| Rate limit | `app/api/leads/route.ts` | 5 envios válidos por IP a cada 10 min. Roda **depois** da validação, pra quem errou o próprio email não ficar trancado. |
+| Recálculo | servidor | Preço adulterado no cliente é ignorado. |
+
+O rate limit é em memória, então vale por instância — é barreira contra flood
+ingênuo, não contra ataque distribuído. Para isso a barreira certa é na borda
+(regra de WAF na Vercel).
+
+### LGPD
+
+O formulário tem aceite obrigatório e link para `/privacidade`
+(`app/privacidade/page.tsx`). Se mudar o que é coletado ou onde é guardado,
+essa página tem que mudar junto — ela é a promessa que a DMG fez a quem
+preencheu.
 
 ## Acessibilidade e performance
 
