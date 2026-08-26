@@ -5,10 +5,10 @@
  * Só D/M/G entram aqui — decisão fechada em docs/0001 §7. Parceiro externo
  * não é integrante e não aparece em seção institucional.
  *
- * TODO(DMG) Q18: as idades foram escritas em 2026 e envelhecem sozinhas. Se
- * forem ficar, viram manutenção anual — vale trocar por ano de entrada ou
- * remover. Confirmar também as fotos: `public/images/` tem variantes
- * (dani/migas/mige/gui) que o site antigo não usava.
+ * As idades foram confirmadas pela DMG em 2026 e **envelhecem sozinhas**: são
+ * manutenção anual. Se um dia incomodar, trocar por ano de nascimento resolve
+ * de vez. As fotos são as três que o site antigo já usava — `public/images/`
+ * guarda variantes (dani/migas/mige/gui/d) que nunca entraram.
  */
 
 export type LadoDoPainel = "direita" | "esquerda" | "dividido";
@@ -32,7 +32,7 @@ export const FUNDADORES: Fundador[] = [
     id: "d",
     letra: "D",
     nome: "Daniel",
-    idade: "22 anos",
+    idade: "18 anos",
     foto: "/images/dan.png",
     stack: ["React", "Node.js", "TypeScript", "PostgreSQL", "Docker"],
     painel: "direita",
@@ -41,7 +41,7 @@ export const FUNDADORES: Fundador[] = [
     id: "m",
     letra: "M",
     nome: "Miguel",
-    idade: "21 anos",
+    idade: "19 anos",
     foto: "/images/migo.png",
     stack: ["Python", "Flutter", "Firebase", "Go", "AWS"],
     // Card do meio: não há lado livre, então nome e stack abrem um para cada lado.
@@ -51,7 +51,7 @@ export const FUNDADORES: Fundador[] = [
     id: "g",
     letra: "G",
     nome: "Guilherme",
-    idade: "23 anos",
+    idade: "18 anos",
     foto: "/images/guigui.png",
     espelharFoto: true,
     stack: ["Rust", "Next.js", "Redis", "Kubernetes", "GraphQL"],

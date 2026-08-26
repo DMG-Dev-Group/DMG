@@ -1,6 +1,6 @@
 # 0002 — Execução: migração do site DMG para Next.js
 
-**Status:** em andamento
+**Status:** construção concluída; aguardando contas de Supabase/Resend e domínio
 **Branch:** `claude/dmg-react-tailwind-nextjs-p5pn3h`
 **Plano de origem:** [`0001-planejamento-reconstrucao-site-dmg.md`](./0001-planejamento-reconstrucao-site-dmg.md)
 
@@ -51,30 +51,39 @@ qualquer arquivo.
 | 4. Logo SVG + intro/splash | ✅ | `public/dmg-logo.svg`, `components/intro/` |
 | 5. `data/services.ts` | ✅ estrutura pronta, **aguarda revisão da DMG** | `data/services.ts`, `lib/orcamento.ts` |
 | 6. Hero, Fundadores, Footer 1:1 | ✅ | `sections/hero.tsx`, `sections/fundadores.tsx`, `footer.tsx` |
-| 6b. Portfólio 1:1 | ⛔ **bloqueado na Q21** | ainda o `projetos.tsx` do doador |
 | 7. Missão/Visão/Valores/Objetivo | ✅ | `sections/missao-visao-valores.tsx` |
 | 8. Configurador de Serviços + API + Supabase + email | ✅ | `ui/service-modal.tsx`, `api/leads/route.ts`, `lib/lead-store.ts` |
 | 9. Stack no lugar do "Quem somos"; remover Investimento | ✅ | `sections/stack.tsx`; "Investimento" não voltou |
 | 10. CTA final com o efeito de cristal | ✅ | `sections/climax.tsx` |
-| 11. `GUIA-MANUTENCAO.md` completo | 🔄 incremental | [`GUIA-MANUTENCAO.md`](./GUIA-MANUTENCAO.md) |
+| 6b. Portfólio | ✅ | `data/projects.ts`, `sections/projetos.tsx` |
+| 11. `GUIA-MANUTENCAO.md` completo | ✅ | [`GUIA-MANUTENCAO.md`](./GUIA-MANUTENCAO.md) |
 
 ## Pendências que dependem da DMG
 
-Marcadas no código como `TODO(DMG) Qn`. Nenhuma bloqueia o que já foi feito;
-todas mudam uma linha de configuração quando a resposta chegar.
+O bloco de perguntas foi respondido. O que sobrou:
 
-| # | Pergunta | Onde está o `TODO` | Assumido até lá |
-|---|---|---|---|
-| Q6 | Deploy ativo hoje? Domínio real? | `app/layout.tsx` (`metadataBase`) | `https://damage.group`, herdado do doador |
-| Q7 | Contas Supabase / email transacional | — | Código + `.env.example`, contas criadas depois |
-| Q8 | Recorrência entra no configurador? | `data/services.ts` (`RECORRENCIA_NO_CONFIGURADOR`) | `"oculta"` |
-| Q12 | Multiplicadores empilhados: soma ou composto? | `data/services.ts` (`COMBINACAO_MULTIPLICADORES`) | `"soma"` (×1,65) |
-| Q15 | Condições comerciais visíveis no site? | `data/services.ts` (`CONDICOES_VISIVEIS`) | `false` |
-| Q17b | "12+ projetos entregues" ainda é verdade? | `sections/hero.tsx` | mantido como está |
-| Q18 | Idades dos fundadores / quais fotos | — | mantido como está |
-| Q21 | Portfólio real ou o atual | — | **bloqueia o passo 6b** — a seção segue com os projetos do doador |
-| Q22b | WhatsApp oficial | `sections/contato.tsx`, `footer.tsx` | só email |
-| Q27 | "Design exclusivo" se aplica a hardware? | `data/services.ts` (`MULT_HARDWARE`) | só "Urgência" no hardware |
+| Assunto | Situação |
+|---|---|
+| Domínio / deploy | Não existe deploy ativo hoje. `metadataBase` está em `https://damage.group` como placeholder, marcado com `TODO(DMG)` em `app/layout.tsx`. Trocar antes de publicar. |
+| Supabase e Resend | Contas ainda não criadas. Código, SQL, `.env.example` e passo a passo prontos no guia — é criar e colar as chaves. |
+| GitHub e LinkedIn | Os dois links do footer ainda apontam para `#`; faltam as URLs dos perfis. |
+| Fotos e vídeos do portfólio | Só Flora Beauty e CNM têm gravação. SANGRE e Tendresse mostram o placeholder "preview em breve". |
+| Idades dos fundadores | Confirmadas (18/19/18) e **envelhecem sozinhas** — viram manutenção anual. |
+
+### Respostas que viraram código
+
+| # | Resposta | Onde |
+|---|---|---|
+| Q6 | Sem deploy ativo; domínio placeholder | `app/layout.tsx` |
+| Q7 | Opção (A): código + `.env.example`, contas depois. Notificação para dmggroupdev@gmail.com | `lib/lead-store.ts`, `.env.example` |
+| Q8 | Recorrência é **modelo de pagamento alternativo**, não adicional: comprar OU alugar | `data/services.ts` (`permiteAluguel`), `ui/service-modal.tsx` |
+| Q12 | Multiplicadores somam (×1,65) | `data/services.ts` |
+| Q15 | Condições comerciais como letra miúda | `data/services.ts` (`CONDICOES_VISIVEIS: true`) |
+| Q17 | "12+ projetos entregues" removido; grid de 3 para 2 | `sections/hero.tsx` |
+| Q18 | Daniel 18, Miguel 19, Guilherme 18; fotos dan/migo/guigui | `data/team.ts` |
+| Q21 | Flora Beauty, CNM, SANGRE, Tendresse. AMIRA fora | `data/projects.ts` |
+| Q22 | WhatsApp +55 98 7028-6636 na faixa de contato e no footer | `data/contato.ts` |
+| Q27 | Só "Urgência" no hardware; "Design exclusivo" não se aplica | `data/services.ts` (`MULT_HARDWARE`) |
 
 ## Verificações feitas
 
@@ -89,16 +98,15 @@ todas mudam uma linha de configuração quando a resposta chegar.
 
 ### Lint
 
-`npx eslint .` acusa **10 erros**, todos em código herdado do doador que
-sobreviveu à migração: `shards`, `reveal`, `climax`, `projetos` e
-`magnetic-button`. Eram 13 — `hero` e `servicos` foram reescritos e saíram da
-lista, e `hero-core` foi removido.
+`npx eslint .` está **limpo**. Eram 13 erros no scaffold, todos herdados do
+doador — regras novas do React Compiler que vieram com o `eslint-config-next`
+16 e que aquele repo nunca rodou.
 
-São regras novas do React Compiler que vieram com o `eslint-config-next` 16 e
-que o repo doador nunca rodou (`setState` dentro de efeito, ref lida durante
-render, chamada impura no corpo do componente). **Nenhum arquivo escrito nesta
-migração acusa erro.**
+Foram corrigidos na causa, não silenciados: PRNG determinístico no lugar de
+`Math.random()` durante o render dos cacos; `useSyncExternalStore` no lugar do
+`useEffect` + `setState` que decidia se podia subir WebGL; o loop de rAF do
+botão magnético movido para um ref em vez de se referenciar por nome; e
+`createElement` trocado por JSX polimórfico no `reveal`.
 
-Ficam para uma passada dedicada no fim: são correções de comportamento em
-código que hoje funciona, e cada uma precisa ser conferida no navegador. Não é
-trabalho para fazer de passagem no meio de outra coisa.
+Cada um foi conferido no navegador antes de entrar — o botão magnético foi
+medido antes e depois com o mesmo roteiro e bate dígito a dígito.

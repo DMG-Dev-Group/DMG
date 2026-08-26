@@ -9,8 +9,10 @@ import {
   NOTA_A_PARTIR_DE,
   CONDICOES_VISIVEIS,
   CONDICOES_COMERCIAIS,
+  planosDeAluguel,
   type Categoria,
   type Item,
+  type Modalidade,
 } from "@/data/services";
 import { calcularOrcamento, formatarBRL } from "@/lib/orcamento";
 import { LIMITE_COMENTARIO, temErro, validarLead, type Contato, type ErrosLead, type LeadPayload } from "@/lib/leads";
@@ -120,6 +122,8 @@ export function ServiceModal({
   const [multiplicadores, setMultiplicadores] = useState<string[]>([]);
   const [gramas, setGramas] = useState(100);
   const [quantidade, setQuantidade] = useState(1);
+  const [modalidade, setModalidade] = useState<Modalidade>("compra");
+  const [planoId, setPlanoId] = useState<string | null>(null);
   const [comentario, setComentario] = useState("");
   const [contato, setContato] = useState<Contato>(CONTATO_VAZIO);
   const [consentimento, setConsentimento] = useState(false);
@@ -171,8 +175,9 @@ export function ServiceModal({
       multiplicadores,
       gramas,
       quantidade,
+      planoRecorrenteId: modalidade === "aluguel" ? planoId : null,
     });
-  }, [itemId, modulos, multiplicadores, gramas, quantidade]);
+  }, [itemId, modulos, multiplicadores, gramas, quantidade, modalidade, planoId]);
 
   const enviar = useCallback(async () => {
     if (!categoria) return;
@@ -186,6 +191,8 @@ export function ServiceModal({
       multiplicadores,
       gramas,
       quantidade,
+      modalidade,
+      planoRecorrenteId: modalidade === "aluguel" ? planoId : null,
       comentario,
       contato,
       consentimento,
@@ -228,7 +235,7 @@ export function ServiceModal({
     } finally {
       setEnviando(false);
     }
-  }, [categoria, itemId, modulos, multiplicadores, gramas, quantidade, comentario, contato, consentimento, honeypot]);
+  }, [categoria, itemId, modulos, multiplicadores, gramas, quantidade, modalidade, planoId, comentario, contato, consentimento, honeypot]);
 
   if (!categoria) return null;
 
@@ -539,6 +546,109 @@ export function ServiceModal({
                                 {NOTA_A_PARTIR_DE}
                               </p>
                             )}
+
+                            {/* As duas portas de pagamento. Não é um extra
+                                somado ao total: é comprar OU alugar. */}
+                            {categoria.permiteAluguel && (
+                              <div className="mt-5 border-t border-hairline pt-5">
+                                <p className="hud mb-3">como pagar</p>
+                                <div className="grid gap-3 sm:grid-cols-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => setModalidade("compra")}
+                                    aria-pressed={modalidade === "compra"}
+                                    className={cn(
+                                      "rounded-[8px] border p-4 text-left transition-colors",
+                                      modalidade === "compra"
+                                        ? "border-red bg-red/10"
+                                        : "border-hairline hover:border-red/50",
+                                    )}
+                                  >
+                                    <span className="block text-sm text-bone">
+                                      Comprar
+                                    </span>
+                                    <span className="mt-1 block font-mono text-lg text-red">
+                                      {formatarBRL(orcamento.total)}
+                                    </span>
+                                    <span className="mt-1 block text-[11px] leading-relaxed text-ash">
+                                      Pagamento do projeto. É seu.
+                                    </span>
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => setModalidade("aluguel")}
+                                    aria-pressed={modalidade === "aluguel"}
+                                    className={cn(
+                                      "rounded-[8px] border p-4 text-left transition-colors",
+                                      modalidade === "aluguel"
+                                        ? "border-red bg-red/10"
+                                        : "border-hairline hover:border-red/50",
+                                    )}
+                                  >
+                                    <span className="block text-sm text-bone">
+                                      Alugar
+                                    </span>
+                                    <span className="mt-1 block font-mono text-lg text-red">
+                                      a partir de{" "}
+                                      {formatarBRL(
+                                        Math.min(
+                                          ...planosDeAluguel().map(
+                                            (pl) => pl.valorMensal,
+                                          ),
+                                        ),
+                                      )}
+                                      /mês
+                                    </span>
+                                    <span className="mt-1 block text-[11px] leading-relaxed text-ash">
+                                      Sem o valor à vista. Escolhe o plano.
+                                    </span>
+                                  </button>
+                                </div>
+
+                                {modalidade === "aluguel" && (
+                                  <div className="mt-4">
+                                    <ul className="grid gap-px bg-hairline">
+                                      {planosDeAluguel().map((pl) => {
+                                        const escolhido = planoId === pl.id;
+                                        return (
+                                          <li key={pl.id}>
+                                            <button
+                                              type="button"
+                                              onClick={() => setPlanoId(pl.id)}
+                                              aria-pressed={escolhido}
+                                              className={cn(
+                                                "flex w-full items-center justify-between gap-4 px-3 py-3.5 text-left transition-colors",
+                                                escolhido
+                                                  ? "bg-red/10"
+                                                  : "bg-void hover:bg-graphite",
+                                              )}
+                                            >
+                                              <span className="min-w-0">
+                                                <span className="block text-sm text-bone">
+                                                  {pl.nome}
+                                                </span>
+                                                <span className="block text-[11px] leading-relaxed text-ash">
+                                                  {pl.inclui}
+                                                </span>
+                                              </span>
+                                              <span className="shrink-0 font-mono text-sm text-red">
+                                                {formatarBRL(pl.valorMensal)}/mês
+                                              </span>
+                                            </button>
+                                          </li>
+                                        );
+                                      })}
+                                    </ul>
+                                    {erros.plano && (
+                                      <p role="alert" className="mt-2 text-xs text-red">
+                                        {erros.plano}
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </>
                         )}
                       </div>
@@ -665,7 +775,11 @@ export function ServiceModal({
                   disabled={enviando}
                   className="clip-corner w-full bg-red px-6 py-4 text-sm font-medium text-void transition-shadow hover:shadow-[0_0_44px_var(--color-red-glow)] disabled:opacity-60"
                 >
-                  {enviando ? "Enviando…" : "Solicitar orçamento"}
+                  {enviando
+                    ? "Enviando…"
+                    : modalidade === "aluguel"
+                      ? "Quero alugar"
+                      : "Solicitar orçamento"}
                 </button>
 
                 {CONDICOES_VISIVEIS && (

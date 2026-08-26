@@ -38,12 +38,9 @@ export const MULTIPLICADORES: Multiplicador[] = [
 ];
 
 /**
- * Como dois multiplicadores marcados juntos se combinam.
+ * Como dois multiplicadores marcados juntos se combinam. Decisão da DMG: soma.
  * "soma"     → total × (1 + 0.35 + 0.30) = ×1,65
  * "composto" → total × 1,35 × 1,30       = ×1,755
- *
- * TODO(DMG) Q12: pendente de confirmação. "soma" é o padrão até lá — mexe em
- * quanto a DMG cobra, então a troca é de uma linha só.
  */
 export const COMBINACAO_MULTIPLICADORES: "soma" | "composto" = "soma";
 
@@ -296,6 +293,12 @@ export type Categoria = {
   aviso?: string;
   /** Categoria sem tabela: o card vai direto ao contato. */
   sobConsulta?: boolean;
+  /**
+   * Oferece o caminho de aluguel além da compra. Vale para o que fica no ar e
+   * precisa de manutenção contínua — site, sistema, loja. Não faz sentido em
+   * serviço de bancada: ninguém aluga uma solda.
+   */
+  permiteAluguel?: boolean;
 };
 
 export const CATEGORIAS: Categoria[] = [
@@ -305,6 +308,7 @@ export const CATEGORIAS: Categoria[] = [
     descricao:
       "Plataformas internas, portais e soluções de negócio pensadas para operar em produção com arquitetura que escala sem quebrar.",
     itens: ["landing-page", "site-institucional", "sistema-interno"],
+    permiteAluguel: true,
   },
   {
     id: "saas",
@@ -312,6 +316,7 @@ export const CATEGORIAS: Categoria[] = [
     descricao:
       "Do MVP ao produto pronto para crescer: multiusuário, billing, gestão e experiência de uso 100% escalável.",
     itens: ["saas-mvp"],
+    permiteAluguel: true,
   },
   {
     id: "ecommerce",
@@ -319,6 +324,7 @@ export const CATEGORIAS: Categoria[] = [
     descricao:
       "Lojas digitais com catálogo, checkout, gestão de pedidos e operações projetadas para vender com menos atrito.",
     itens: ["ecommerce"],
+    permiteAluguel: true,
   },
   {
     id: "dashboards",
@@ -327,6 +333,7 @@ export const CATEGORIAS: Categoria[] = [
       "Painéis e métricas que transformam informação em decisão em tempo real.",
     // Mesmo item de "Sistemas web sob medida", mesmo preço (docs/0001 §3, Q13).
     itens: ["sistema-interno"],
+    permiteAluguel: true,
   },
   {
     id: "robotica",
@@ -357,14 +364,24 @@ export const CATEGORIAS: Categoria[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Recorrência (pág. 3). A tabela diz que todo projeto entregue sai com plano.
-// TODO(DMG) Q8: obrigatório no configurador, opcional, ou fora do site?
-// Enquanto não há resposta, `RECORRENCIA_NO_CONFIGURADOR` mantém os planos
-// fora do fluxo — dado transcrito e pronto, é ligar a flag.
+// Recorrência — os planos mensais da pág. 3.
+//
+// Decisão da DMG (Q8): recorrência NÃO é um adicional somado à compra. É um
+// caminho de pagamento alternativo. Depois de calcular o total, o configurador
+// oferece as duas portas:
+//
+//   comprar  → paga o total configurado, uma vez, e o projeto é seu
+//   alugar   → paga só a mensalidade do plano, sem o valor à vista
+//
+// É o mesmo "também disponível por assinatura" que os cards de Investimento do
+// site antigo já anunciavam. O plano escolhido no aluguel independe dos módulos
+// marcados: são grades diferentes.
+//
+// "Manutenção hardware" fica fora do configurador de propósito — é manutenção
+// de um equipamento já entregue, não aluguel de nada.
 // ---------------------------------------------------------------------------
 
-export const RECORRENCIA_NO_CONFIGURADOR: "obrigatoria" | "opcional" | "oculta" =
-  "oculta";
+export type Modalidade = "compra" | "aluguel";
 
 export type PlanoRecorrente = {
   id: string;
@@ -408,12 +425,12 @@ export const PLANOS_RECORRENTES: PlanoRecorrente[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Condições comerciais (pág. 3).
-// TODO(DMG) Q15: exibir como letra miúda no configurador, ou não publicar?
-// `CONDICOES_VISIVEIS` liga/desliga sem mexer no texto.
+// Condições comerciais (pág. 3). Decisão da DMG: aparecem como letra miúda no
+// rodapé do configurador. A constante continua existindo para desligar sem
+// mexer no texto, caso algum dia mude.
 // ---------------------------------------------------------------------------
 
-export const CONDICOES_VISIVEIS = false;
+export const CONDICOES_VISIVEIS = true;
 
 export const CONDICOES_COMERCIAIS: { item: string; condicao: string }[] = [
   {
@@ -457,3 +474,10 @@ export const categoriaPorId = (id: string) =>
   CATEGORIAS.find((c) => c.id === id);
 export const multiplicadorPorId = (id: string) =>
   MULTIPLICADORES.find((m) => m.id === id);
+
+/** Os planos oferecidos na porta do aluguel — só os de software. */
+export const planosDeAluguel = () =>
+  PLANOS_RECORRENTES.filter((p) => p.escopo === "software");
+
+export const planoPorId = (id: string) =>
+  PLANOS_RECORRENTES.find((p) => p.id === id);

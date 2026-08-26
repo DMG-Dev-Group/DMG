@@ -12,9 +12,9 @@ import { HeroGrid } from "@/components/core/hero-grid";
  * Números das stats e copy: `legacy/damage_group_landing.html`, linhas 29-61.
  */
 
+// "12+ projetos entregues" saiu por decisão da DMG. Número que envelhece e
+// que ninguém confere só enfraquece os outros dois.
 const STATS = [
-  // TODO(DMG) Q17b: "12+" precisa ser reconfirmado antes de publicar.
-  { numero: "12+", rotulo: "Projetos entregues" },
   { numero: "100%", rotulo: "Foco em resultados" },
   { numero: "∞", rotulo: "Possibilidades de inovação" },
 ];

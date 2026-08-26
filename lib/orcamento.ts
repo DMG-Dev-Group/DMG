@@ -32,6 +32,7 @@ export type Selecao = {
   gramas?: number;
   /** Itens cobrados por unidade (ex.: modelagem 3D por peça). */
   quantidade?: number;
+  /** Preenchido só quando a pessoa escolhe alugar em vez de comprar. */
   planoRecorrenteId?: string | null;
 };
 

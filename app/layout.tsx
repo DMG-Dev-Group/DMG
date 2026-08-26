@@ -20,6 +20,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  // TODO(DMG): placeholder. A DMG ainda não fechou o domínio, e não há deploy
+  // ativo — mas Open Graph e imagens absolutas saem com esta URL, então ela
+  // precisa virar a real antes de publicar.
   metadataBase: new URL("https://damage.group"),
   title: {
     default: "DMG — Damage Group · Software de alto padrão",

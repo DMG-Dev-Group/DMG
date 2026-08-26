@@ -1,16 +1,18 @@
 import Link from "next/link";
+import { EMAIL, WHATSAPP } from "@/data/contato";
 
 /**
  * Footer — conteúdo do site antigo (`legacy/damage_group_landing.html` 464-475)
  * na estrutura do DMG-DEF, que é mais limpa (docs/0001 §5, linha 12).
  *
- * TODO(DMG) Q22b: os perfis ainda apontam para "#". Plugar GitHub e LinkedIn
- * reais e, se houver, o WhatsApp oficial.
+ * TODO(DMG): GitHub e LinkedIn ainda apontam para "#" — faltam as URLs reais
+ * dos perfis. WhatsApp e email já estão plugados.
  */
 const LINKS = [
   { label: "GitHub", href: "#" },
   { label: "LinkedIn", href: "#" },
-  { label: "Contato", href: "mailto:dmggroupdev@gmail.com" },
+  { label: "WhatsApp", href: WHATSAPP.href },
+  { label: "Contato", href: `mailto:${EMAIL}` },
 ];
 
 export function Footer() {

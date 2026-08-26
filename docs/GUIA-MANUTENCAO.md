@@ -2,9 +2,9 @@
 
 Onde mexer em cada coisa, sem precisar entender o projeto inteiro.
 
-Este guia cresce junto com a migração (ver
-[`0002-migracao-nextjs.md`](./0002-migracao-nextjs.md)). Seções marcadas com
-⏳ ainda não existem no site.
+Companheiro do log de execução em
+[`0002-migracao-nextjs.md`](./0002-migracao-nextjs.md), que registra o porquê
+das decisões. Aqui é só o "onde mexer".
 
 ---
 
@@ -26,7 +26,7 @@ por padrão**, em dev e em build — não existe mais a flag `--turbopack`.
 app/          layout (fontes, metadata/OG), page (ordem das seções), globals.css
 components/
   intro/      splash de abertura (portada do CNM)
-  core/       3D: cristal do hero, shards do clímax, notebook dos projetos
+  core/       canvas do hero (2D), shards do clímax, notebook 3D dos projetos
   motion/     reveals de scroll (GSAP)
   sections/   uma pasta = uma seção da página
   ui/         section, magnetic-button, hud
@@ -69,6 +69,7 @@ componente. Estrutura:
 | `MULTIPLICADORES` | Design exclusivo (+35%) e Urgência (+30%). |
 | `CATEGORIAS` | Os cards da seção Serviços e quais itens cada um abre. |
 | `PLANOS_RECORRENTES` | Planos mensais (Essencial / Plus / Full / hardware). |
+| `permiteAluguel` | Por categoria: se ela oferece a porta do aluguel além da compra. |
 | `CONDICOES_COMERCIAIS` | Pagamento, escopo, infra, prazo, garantia. |
 
 Tarefas comuns:
@@ -88,11 +89,25 @@ Três constantes no topo do arquivo mudam o funcionamento sem mexer em código:
 | Constante | Valor hoje | O que faz |
 |---|---|---|
 | `COMBINACAO_MULTIPLICADORES` | `"soma"` | `"soma"` = +35% e +30% viram ×1,65. `"composto"` = ×1,755. |
-| `RECORRENCIA_NO_CONFIGURADOR` | `"oculta"` | `"obrigatoria"` / `"opcional"` fazem os planos mensais entrarem no fluxo. |
-| `CONDICOES_VISIVEIS` | `false` | `true` mostra as condições comerciais como letra miúda. |
+| `CONDICOES_VISIVEIS` | `true` | Mostra as condições comerciais como letra miúda no rodapé do configurador. |
 
-As três estão marcadas com `TODO(DMG)` porque aguardam decisão — ver a tabela
-de pendências em `0002-migracao-nextjs.md`.
+### Comprar ou alugar
+
+Recorrência **não** é um adicional somado ao total. Depois de calcular
+(base + módulos + multiplicadores), o configurador abre duas portas:
+
+- **Comprar** — paga o total configurado, uma vez. O projeto é do cliente.
+- **Alugar** — paga só a mensalidade do plano escolhido, sem o valor à vista.
+
+O plano do aluguel (Essencial / Plus / Full) independe dos módulos marcados:
+são grades diferentes. Os dois caminhos desembocam no mesmo formulário, e o
+lead grava `modalidade` para a DMG saber qual conversa vai ter.
+
+A porta do aluguel só aparece nas categorias com `permiteAluguel: true` — o que
+fica no ar e precisa de manutenção contínua. Ninguém aluga uma solda.
+
+"Manutenção hardware" (R$ 120/mês) fica fora do configurador de propósito: é
+manutenção de equipamento já entregue, não aluguel.
 
 ### Onde a conta é feita
 
@@ -113,14 +128,14 @@ adulterado vindo do navegador não consegue injetar linha no orçamento.
 |---|---|
 | Durações (desenho, glow, hold, fade) | objeto `T`, no topo do arquivo |
 | Chave do "já viu a intro" | `SEEN_KEY = "dmg_intro_seen"` |
-| Prazo do failsafe | `FAILSAFE_MS` (7s) |
+| Prazo do failsafe | `FAILSAFE_MS` (11s — tem que ser maior que o timeline, ~7,7s) |
 | Aparência do traço (cor, espessura, glow) | `app/globals.css`, bloco `#dmg-splash .dmg-path` |
 | O desenho do logo | `components/intro/dmg-logo.tsx` |
 
 **Testar a versão completa de novo:** abra o console e rode `resetIntro()`. Ele
 limpa a flag e recarrega.
 
-**Comportamento:** primeiro acesso vê a animação inteira (~7s); visitas
+**Comportamento:** primeiro acesso vê a animação inteira (~7,7s); visitas
 seguintes veem uma versão curta, sem redesenhar. Clique ou ESC pulam a qualquer
 momento. Sem JavaScript, a splash não aparece (um `<noscript>` a esconde) — o
 site abre direto, em vez de ficar preso numa tela preta.
@@ -130,6 +145,15 @@ medir cada traço com `getTotalLength()`, o que não funciona com `<img>`. Um lo
 novo precisa entrar como `<path>` inline, cada um com `className="dmg-path"`.
 A ordem dos paths no arquivo é a ordem do stagger (D → M → G). Há uma cópia
 estática em `public/dmg-logo.svg` para usos comuns (favicon, OG, rodapé).
+
+## Trocar contato (WhatsApp, email)
+
+`data/contato.ts`. O número aparece na faixa de contato e no footer, e o email
+aparece nesses dois lugares mais o configurador — por isso mora num arquivo só.
+Mudar ali propaga para tudo, incluindo o link `wa.me` já com mensagem inicial.
+
+GitHub e LinkedIn ainda apontam para `#` em `components/footer.tsx`: faltam as
+URLs reais dos perfis.
 
 ## Trocar textos
 
@@ -147,9 +171,10 @@ portfólio). O nome do arquivo é citado no componente ou no `data/` da seção.
 (a URL do site). O card de compartilhamento é gerado em
 `app/opengraph-image.tsx`.
 
-> ⚠️ `metadataBase` está em `https://damage.group`, herdado do repo doador.
-> Confirmar o domínio real antes de publicar — links de OG e imagens absolutas
-> saem errados se estiver incorreto.
+> ⚠️ `metadataBase` está em `https://damage.group` como **placeholder** — a DMG
+> ainda não fechou o domínio. Trocar antes de publicar: links de Open Graph e
+> imagens absolutas saem errados se a URL não for a real. É a única coisa que
+> precisa mudar aqui na hora do deploy.
 
 ## Configurador de orçamento
 
@@ -201,6 +226,8 @@ create table public.leads (
   subtotal numeric,
   total numeric,
   sob_orcamento boolean not null default false,
+  -- "compra" (paga o total) ou "aluguel" (paga só a mensalidade)
+  modalidade text not null default 'compra',
   plano_recorrente text,
 
   comentario text,

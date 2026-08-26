@@ -41,6 +41,7 @@ function linhaDoLead(payload: LeadPayload, orcamento: Orcamento | null) {
     subtotal: comValor?.subtotal ?? null,
     total: comValor?.total ?? null,
     sob_orcamento: orcamento?.sobOrcamento ?? true,
+    modalidade: payload.modalidade,
     plano_recorrente: orcamento?.mensal?.descricao ?? null,
     comentario: payload.comentario.slice(0, LIMITE_COMENTARIO),
     nome: payload.contato.nome.trim(),
@@ -99,7 +100,18 @@ function corpoDoEmail(payload: LeadPayload, orcamento: Orcamento | null) {
   par("Categoria", categoria?.nome ?? payload.categoriaId);
   if (item) par("Item", item.nome);
 
-  if (orcamento && !orcamento.sobOrcamento) {
+  par("Modalidade", payload.modalidade === "aluguel" ? "ALUGUEL (mensal)" : "Compra");
+
+  if (payload.modalidade === "aluguel" && orcamento?.mensal) {
+    par(
+      "Plano",
+      `${orcamento.mensal.descricao} — ${formatarBRL(orcamento.mensal.valor)}/mês`,
+    );
+    par(
+      "Valor de compra equivalente",
+      orcamento.sobOrcamento ? "sob orçamento" : formatarBRL(orcamento.total),
+    );
+  } else if (orcamento && !orcamento.sobOrcamento) {
     par("Base", `${orcamento.base.descricao} — ${formatarBRL(orcamento.base.valor)}`);
     for (const m of orcamento.modulos) par("Módulo", `${m.descricao} — ${formatarBRL(m.valor)}`);
     for (const a of orcamento.acrescimos) par("Acréscimo", `${a.descricao} — ${formatarBRL(a.valor)}`);
@@ -107,8 +119,6 @@ function corpoDoEmail(payload: LeadPayload, orcamento: Orcamento | null) {
       "TOTAL",
       `${orcamento.aPartirDe ? "a partir de " : ""}${formatarBRL(orcamento.total)}`,
     );
-    if (orcamento.mensal)
-      par("Recorrência", `${orcamento.mensal.descricao} — ${formatarBRL(orcamento.mensal.valor)}/mês`);
   } else {
     par("TOTAL", "sob orçamento");
   }

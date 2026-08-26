@@ -1,5 +1,6 @@
-import { Mail } from "lucide-react";
+import { Mail, MessageCircle } from "lucide-react";
 import { HudTag } from "@/components/ui/hud";
+import { WHATSAPP } from "@/data/contato";
 
 /**
  * Contato — a saída direta, de propósito discreta (Q22).
@@ -8,9 +9,6 @@ import { HudTag } from "@/components/ui/hud";
  * de orçamento. Esta faixa existe para quem não quer montar orçamento nenhum e
  * só quer mandar uma mensagem. Se ela crescer, começa a competir com o
  * configurador — e o configurador é que qualifica o lead.
- *
- * TODO(DMG) Q22b: se houver um WhatsApp oficial da DMG, ele entra aqui ao
- * lado do email.
  */
 export function Contato() {
   return (
@@ -23,17 +21,32 @@ export function Contato() {
           </p>
         </div>
 
-        <a
-          href="mailto:dmggroupdev@gmail.com?subject=Projeto%20com%20a%20DMG"
-          className="group inline-flex items-center gap-3 font-mono text-sm text-ash transition-colors hover:text-bone"
-        >
-          <Mail className="h-4 w-4 text-red" strokeWidth={1.6} />
-          dmggroupdev@gmail.com
-          <span
-            aria-hidden
-            className="h-px w-8 bg-red transition-all duration-300 group-hover:w-12"
-          />
-        </a>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-8">
+          <a
+            href={WHATSAPP.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-3 font-mono text-sm text-ash transition-colors hover:text-bone"
+          >
+            <MessageCircle className="h-4 w-4 text-red" strokeWidth={1.6} />
+            {WHATSAPP.exibicao}
+            <span
+              aria-hidden
+              className="h-px w-8 bg-red transition-all duration-300 group-hover:w-12"
+            />
+          </a>
+          <a
+            href="mailto:dmggroupdev@gmail.com?subject=Projeto%20com%20a%20DMG"
+            className="group inline-flex items-center gap-3 font-mono text-sm text-ash transition-colors hover:text-bone"
+          >
+            <Mail className="h-4 w-4 text-red" strokeWidth={1.6} />
+            dmggroupdev@gmail.com
+            <span
+              aria-hidden
+              className="h-px w-8 bg-red transition-all duration-300 group-hover:w-12"
+            />
+          </a>
+        </div>
       </div>
     </section>
   );

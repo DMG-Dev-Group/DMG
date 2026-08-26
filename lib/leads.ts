@@ -1,4 +1,9 @@
-import { categoriaPorId, itemPorId } from "@/data/services";
+import {
+  categoriaPorId,
+  itemPorId,
+  planosDeAluguel,
+  type Modalidade,
+} from "@/data/services";
 import type { Selecao } from "@/lib/orcamento";
 
 /**
@@ -24,6 +29,8 @@ export type LeadPayload = {
   multiplicadores: string[];
   gramas?: number;
   quantidade?: number;
+  /** "compra" paga o total configurado; "aluguel" paga só a mensalidade. */
+  modalidade: Modalidade;
   planoRecorrenteId?: string | null;
   comentario: string;
   contato: Contato;
@@ -32,7 +39,9 @@ export type LeadPayload = {
   website?: string;
 };
 
-export type ErrosLead = Partial<Record<keyof Contato | "consentimento" | "categoria", string>>;
+export type ErrosLead = Partial<
+  Record<keyof Contato | "consentimento" | "categoria" | "plano", string>
+>;
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -64,9 +73,23 @@ export function validarLead(payload: LeadPayload): ErrosLead {
     erros.consentimento = "Precisamos do seu aceite pra guardar seus dados.";
 
   // A categoria sempre existe; o item pode ser nulo em "sob consulta".
-  if (!categoriaPorId(payload.categoriaId)) erros.categoria = "Categoria inválida.";
+  const categoria = categoriaPorId(payload.categoriaId);
+  if (!categoria) erros.categoria = "Categoria inválida.";
   else if (payload.itemId && !itemPorId(payload.itemId))
     erros.categoria = "Item inválido.";
+
+  // Aluguel exige um plano, e um plano que essa categoria de fato ofereça —
+  // sem isso o lead chega dizendo "quero alugar" sem dizer alugar o quê.
+  if (payload.modalidade === "aluguel") {
+    if (!categoria?.permiteAluguel) {
+      erros.plano = "Essa frente não é oferecida por assinatura.";
+    } else if (
+      !payload.planoRecorrenteId ||
+      !planosDeAluguel().some((pl) => pl.id === payload.planoRecorrenteId)
+    ) {
+      erros.plano = "Escolhe um plano mensal.";
+    }
+  }
 
   return erros;
 }
@@ -82,7 +105,9 @@ export function selecaoDoPayload(payload: LeadPayload): Selecao | null {
     multiplicadores: payload.multiplicadores,
     gramas: payload.gramas,
     quantidade: payload.quantidade,
-    planoRecorrenteId: payload.planoRecorrenteId ?? null,
+    // O plano só entra na conta quando a pessoa escolheu alugar.
+    planoRecorrenteId:
+      payload.modalidade === "aluguel" ? (payload.planoRecorrenteId ?? null) : null,
   };
 }
 
