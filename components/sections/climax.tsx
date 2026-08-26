@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { climaxScroll } from "@/lib/climax-scroll";
 import { CanvasBoundary } from "@/components/core/canvas-boundary";
 import { HudTag } from "@/components/ui/hud";
+import { use3DPermitido } from "@/lib/use-3d-permitido";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 
 const ShardsCanvas = dynamic(() => import("@/components/core/shards-canvas"), {
@@ -23,16 +24,11 @@ const ShardsCanvas = dynamic(() => import("@/components/core/shards-canvas"), {
 export function Climax() {
   const section = useRef<HTMLElement>(null);
   const glitch = useRef<HTMLDivElement>(null);
-  const [enable3D, setEnable3D] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [active, setActive] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const narrow = window.matchMedia("(max-width: 768px)").matches;
-    setEnable3D(!reduce && !narrow);
-  }, []);
+  const enable3D = use3DPermitido();
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);

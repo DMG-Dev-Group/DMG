@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  createElement,
-  type ReactNode,
-  type ElementType,
-} from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
@@ -29,7 +23,12 @@ export function SplitReveal({
 }: {
   children: ReactNode;
   className?: string;
-  as?: ElementType;
+  /**
+   * Só tags nativas. O componente entrega um ref para o GSAP medir e animar o
+   * elemento — passar um componente de função aqui não garante que o ref chegue
+   * a um nó do DOM, e a animação falharia em silêncio.
+   */
+  as?: keyof React.JSX.IntrinsicElements;
   delay?: number;
 }) {
   const ref = useRef<HTMLElement | null>(null);
@@ -68,7 +67,14 @@ export function SplitReveal({
     };
   }, [delay]);
 
-  return createElement(as as ElementType, { ref, className }, children);
+  // JSX polimórfico em vez de createElement: mesma saída, e o `ref` é
+  // encaminhado como prop normal (React 19) em vez de virar argumento opaco.
+  const Tag = as as "p";
+  return (
+    <Tag ref={ref as React.Ref<HTMLParagraphElement>} className={className}>
+      {children}
+    </Tag>
+  );
 }
 
 /**

@@ -9,6 +9,7 @@ import { projects, STATUS_LABEL, type Project } from "@/data/projects";
 import { SectionIndex, HudTag } from "@/components/ui/hud";
 import { CanvasBoundary } from "@/components/core/canvas-boundary";
 import { projectsScroll } from "@/lib/projects-scroll";
+import { use3DPermitido } from "@/lib/use-3d-permitido";
 
 const LaptopCanvas = dynamic(() => import("@/components/core/laptop-canvas"), {
   ssr: false,
@@ -100,7 +101,7 @@ function ProjectInfo({
         {project.tagline}
       </p>
       <p className="mt-4 max-w-md text-sm leading-relaxed text-ash">
-        <span className="text-red">// </span>
+        <span className="text-red">{"// "}</span>
         {project.papel}
       </p>
 
@@ -141,16 +142,11 @@ export function Projetos() {
   const stage = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const activeRef = useRef(0);
-  const [mode, setMode] = useState<"3d" | "flat">("flat");
   const [mounted, setMounted] = useState(false);
   const [canvasActive, setCanvasActive] = useState(false);
   const [webglFailed, setWebglFailed] = useState(false);
 
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const narrow = window.matchMedia("(max-width: 768px)").matches;
-    setMode(reduce || narrow ? "flat" : "3d");
-  }, []);
+  const mode: "3d" | "flat" = use3DPermitido() ? "3d" : "flat";
 
   useEffect(() => {
     if (mode !== "3d") return;

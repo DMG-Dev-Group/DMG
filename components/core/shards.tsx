@@ -8,6 +8,46 @@ import { climaxScroll } from "@/lib/climax-scroll";
 const COUNT = 90;
 
 /**
+ * PRNG determinístico (mulberry32). Os cacos precisam parecer aleatórios, não
+ * *ser* aleatórios: com `Math.random()` no corpo do componente, cada re-render
+ * podia redistribuir os 90 fragmentos no meio da animação. Semeado pelo índice,
+ * o resultado é idêntico a cada execução — e o cálculo vira função pura, que
+ * pode viver fora do render.
+ */
+function rng(semente: number) {
+  let s = semente;
+  return () => {
+    s = (s + 0x6d2b79f5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Direção uniforme na esfera — sem isso os cacos se acumulam nos polos. */
+function direcaoNaEsfera(r: () => number) {
+  const z = r() * 2 - 1;
+  const phi = r() * Math.PI * 2;
+  const raio = Math.sqrt(1 - z * z);
+  return new THREE.Vector3(raio * Math.cos(phi), raio * Math.sin(phi), z);
+}
+
+// Calculado uma vez, na carga do módulo: é constante do projeto, não estado.
+const CACOS = Array.from({ length: COUNT }, (_, i) => {
+  const r = rng(i * 2654435761);
+  const dir = direcaoNaEsfera(r);
+  return {
+    dir,
+    start: dir.clone().multiplyScalar(0.3 + r() * 0.5),
+    spread: 4 + r() * 7,
+    rotAxis: direcaoNaEsfera(r),
+    rotSpeed: (r() * 2 - 1) * 3,
+    scale: 0.18 + r() * 0.3,
+    phase: r() * Math.PI * 2,
+  };
+});
+
+/**
  * Shards — the core shattering. An InstancedMesh of faceted fragments that start
  * clustered (the intact core) and blast outward + tumble as the climax scroll
  * progresses, glowing hotter in red (Bloom lights them). Reads the shared
@@ -17,22 +57,7 @@ export function Shards() {
   const ref = useRef<THREE.InstancedMesh>(null);
   const mat = useRef<THREE.MeshStandardMaterial>(null);
 
-  const data = useMemo(
-    () =>
-      Array.from({ length: COUNT }, () => {
-        const dir = new THREE.Vector3().randomDirection();
-        return {
-          dir,
-          start: dir.clone().multiplyScalar(0.3 + Math.random() * 0.5),
-          spread: 4 + Math.random() * 7,
-          rotAxis: new THREE.Vector3().randomDirection(),
-          rotSpeed: (Math.random() * 2 - 1) * 3,
-          scale: 0.18 + Math.random() * 0.3,
-          phase: Math.random() * Math.PI * 2,
-        };
-      }),
-    [],
-  );
+  const data = CACOS;
 
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const q = useMemo(() => new THREE.Quaternion(), []);

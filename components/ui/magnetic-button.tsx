@@ -47,36 +47,46 @@ export function MagneticButton({
   const target = useRef({ x: 0, y: 0 });
   const reduced = useRef(false);
 
+  // O passo da animação vive num ref, não num useCallback: ele reagenda a si
+  // mesmo, e um `useCallback` que se referencia por nome é uma leitura antes da
+  // declaração — a versão capturada pode ficar velha. Aqui a função é criada
+  // uma vez, no efeito, e só lê refs.
+  const passo = useRef<() => void>(null);
+
   useEffect(() => {
     reduced.current = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+
+    const animar = () => {
+      cur.current.x += (target.current.x - cur.current.x) * 0.15;
+      cur.current.y += (target.current.y - cur.current.y) * 0.15;
+      const { x, y } = cur.current;
+      if (rootRef.current) {
+        rootRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
+      if (innerRef.current) {
+        innerRef.current.style.transform = `translate3d(${x * 0.4}px, ${y * 0.4}px, 0)`;
+      }
+      const parou =
+        Math.abs(target.current.x - x) < 0.1 &&
+        Math.abs(target.current.y - y) < 0.1;
+      if (parou && target.current.x === 0 && target.current.y === 0) {
+        raf.current = 0;
+        return;
+      }
+      raf.current = requestAnimationFrame(animar);
+    };
+    passo.current = animar;
+
     return () => cancelAnimationFrame(raf.current);
   }, []);
 
-  const loop = useCallback(() => {
-    cur.current.x += (target.current.x - cur.current.x) * 0.15;
-    cur.current.y += (target.current.y - cur.current.y) * 0.15;
-    const { x, y } = cur.current;
-    if (rootRef.current) {
-      rootRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-    }
-    if (innerRef.current) {
-      innerRef.current.style.transform = `translate3d(${x * 0.4}px, ${y * 0.4}px, 0)`;
-    }
-    const settled =
-      Math.abs(target.current.x - x) < 0.1 &&
-      Math.abs(target.current.y - y) < 0.1;
-    if (settled && target.current.x === 0 && target.current.y === 0) {
-      raf.current = 0;
-      return;
-    }
-    raf.current = requestAnimationFrame(loop);
-  }, []);
-
   const ensureLoop = useCallback(() => {
-    if (!raf.current) raf.current = requestAnimationFrame(loop);
-  }, [loop]);
+    if (!raf.current && passo.current) {
+      raf.current = requestAnimationFrame(passo.current);
+    }
+  }, []);
 
   const onMove = useCallback(
     (e: React.PointerEvent) => {
