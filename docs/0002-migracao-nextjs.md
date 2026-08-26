@@ -38,6 +38,7 @@ qualquer arquivo.
 | 6 | Preços continuam sendo os da tabela de parceiro, publicados como estão | Risco levantado na análise (a tabela é um documento de parceiro, com valores líquidos da DMG) e reconfirmado pela DMG como decisão consciente. |
 | 7 | Supabase e Resend são chamados por `fetch`, sem SDK | É uma inserção e um envio. Os SDKs oficiais acrescentariam duas dependências para o mesmo POST. Trocar depois é reescrever duas funções em `lib/lead-store.ts`. |
 | 8 | A seção Contato virou uma faixa discreta | O CTA grande agora é o do clímax, logo acima dela. Duas chamadas de ação em tela cheia seguidas competiriam entre si — e o funil que qualifica o lead é o configurador. |
+| 10 | No card de fundador **ativo**, a foto continua recortada pelo card | O CSS antigo tinha `.card.active { overflow: visible }` e a foto estourava por cima de tudo. Fica dramático, mas no site antigo isso empurra os painéis de info para fora da tela — dá para ver os textos cortados nas bordas. Contido aqui; é uma linha para reverter, se a DMG preferir o estouro. |
 | 9 | Cadeia do cristal 3D removida (`hero-core`, `core-canvas`, `core-poster`, `crystal`, `damage-scroll`, `lib/damage.ts`, shaders) | Ficou órfã quando o hero voltou a ser o canvas 2D do site real. O clímax usa os *shards*, não o cristal íntegro. ~450 linhas de código morto que só confundiriam quem pegasse o projeto depois; o histórico do git guarda tudo. |
 
 ## Progresso por passo do plano (§8)
