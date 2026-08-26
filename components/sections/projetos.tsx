@@ -64,17 +64,28 @@ function DeviceFrame({ project }: { project: Project }) {
   );
 }
 
-function ProjectInfo({ project, index }: { project: Project; index: number }) {
+function ProjectInfo({
+  project,
+  index,
+  comIndice = true,
+}: {
+  project: Project;
+  index: number;
+  /** No modo fixado o índice já aparece no HUD do palco — não repetir. */
+  comIndice?: boolean;
+}) {
   const producao = project.status === "producao";
   const badge =
     project.status !== "producao" ? STATUS_LABEL[project.status] : null;
 
   return (
     <div>
-      <SectionIndex
-        index={String(index + 1).padStart(2, "0")}
-        label={`${projects.length.toString().padStart(2, "0")} · PROJETOS`}
-      />
+      {comIndice && (
+        <SectionIndex
+          index={String(index + 1).padStart(2, "0")}
+          label={`${projects.length.toString().padStart(2, "0")} · PROJETOS`}
+        />
+      )}
       <div className="mt-8 flex items-center gap-3">
         <h3 className="text-3xl font-bold tracking-tight text-bone md:text-4xl">
           {project.nome}
@@ -222,6 +233,20 @@ export function Projetos() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Ficha do projeto ativo, por cima do palco.
+            Sem ela a seção era um vazio: sete telas de scroll mostrando um
+            notebook, sem dizer o nome de nenhum projeto, o que a DMG fez nele
+            nem para onde clicar. A tela do notebook 3D não é legível a ponto
+            de contar essa história sozinha. */}
+        <div
+          key={projects[active].id}
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-void via-void/85 to-transparent px-6 pb-12 pt-24 motion-safe:animate-[dmg-glitch-in_0.5s_var(--ease-out-expo)_both] md:px-10 lg:inset-y-0 lg:right-auto lg:flex lg:w-[46%] lg:max-w-xl lg:flex-col lg:justify-center lg:bg-none lg:pb-0 lg:pt-0"
+        >
+          <div className="pointer-events-auto">
+            <ProjectInfo project={projects[active]} index={active} comIndice={false} />
+          </div>
         </div>
       </div>
     </section>

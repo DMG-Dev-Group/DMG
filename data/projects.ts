@@ -10,24 +10,30 @@ export type Project = {
   resultado?: string; // 1 métrica/entrega concreta
   status: ProjectStatus;
   device: "browser" | "phone" | "laptop";
-  /** Clipe curto mudo em loop. TODO: colocar os arquivos em /public/projetos/ */
-  videoLoop?: { mp4: string; webm?: string };
-  /** Demo real em loop (gif) — mostrado no device frame quando presente. */
+  /**
+   * Demonstração em loop (gif) dentro do device frame. Sem ela, a seção mostra
+   * um placeholder com o nome do projeto e "preview em breve" — que é um
+   * estado digno, não um buraco. Para plugar: solte o arquivo em
+   * `public/projetos/` e aponte aqui.
+   */
   demo?: string;
-  /** Frame estático — sempre presente. TODO: exportar de cada projeto. */
-  poster: string;
   /** Domínio exibido na barra do device frame. */
   host?: string;
   url?: string;
 };
 
 /**
- * Projetos reais da DMG. Ordem = ordem de aparição no scroll (carro-chefe primeiro).
- * Adicionar projeto = adicionar objeto aqui; a seção é orientada a conteúdo.
+ * Projetos reais da DMG. A ordem aqui é a ordem de aparição no scroll —
+ * carro-chefe primeiro. Adicionar projeto = adicionar objeto; a seção é
+ * orientada a conteúdo e se ajusta sozinha.
  *
- * ASSETS: enquanto não houver screen recordings reais, o device frame mostra um
- * poster placeholder elegante. Para plugar o real, basta soltar os arquivos em
- * /public/projetos/ com os nomes abaixo — o componente já usa video + poster.
+ * Portfólio inventado em site institucional é risco: basta um cliente
+ * perceber para queimar a credibilidade inteira. Por isso aqui só entram
+ * projetos que existem — os três fictícios do site antigo (NexusOS, VaultPay,
+ * CoreLink) ficaram de fora por decisão da DMG.
+ *
+ * Hoje só Flora Beauty e CNM têm gravação; os outros mostram o placeholder
+ * com o nome e "preview em breve".
  */
 export const projects: Project[] = [
   {
@@ -47,12 +53,7 @@ export const projects: Project[] = [
       "Loja em produção: catálogo, carrinho, checkout e login (e-mail + Google).",
     status: "producao",
     device: "browser",
-    videoLoop: {
-      mp4: "/projetos/flora-beauty.mp4",
-      webm: "/projetos/flora-beauty.webm",
-    },
     demo: "/projetos/flora-beauty.gif",
-    poster: "/projetos/flora-beauty.jpg",
     host: "flora-5754a.web.app",
     url: "https://flora-5754a.web.app",
   },
@@ -68,32 +69,9 @@ export const projects: Project[] = [
       "Classificação calculada automaticamente a partir dos resultados; notícias, calendário, hall da fama e equipes gerenciados pelo admin.",
     status: "producao",
     device: "browser",
-    videoLoop: { mp4: "/projetos/cnm.mp4", webm: "/projetos/cnm.webm" },
     demo: "/projetos/cnm.gif",
-    poster: "/projetos/cnm.jpg",
     host: "cnm-rose.vercel.app",
     url: "https://cnm-rose.vercel.app",
-  },
-  {
-    id: "amira",
-    nome: "AMIRA",
-    tagline:
-      "Perfumaria árabe premium. Vitrine de luxo: linha Asaad, acessórios e iPhones.",
-    papel: "Design e frontend: 3D interativo e animações de scroll.",
-    stack: [
-      "Next.js 16",
-      "TypeScript",
-      "Tailwind v4",
-      "GSAP + ScrollTrigger",
-      "Lenis",
-      "Spline (3D)",
-    ],
-    ano: "2026",
-    resultado: "Cena 3D + motion refinado, design minimalista border-driven.",
-    status: "desenvolvimento",
-    device: "browser",
-    poster: "/projetos/amira.jpg",
-    host: "amira.com.br",
   },
   {
     id: "sangre-canvas",
@@ -113,7 +91,6 @@ export const projects: Project[] = [
     resultado: "Canvas com device frames, edição de tipografia, multi-página e export.",
     status: "desenvolvimento",
     device: "laptop",
-    poster: "/projetos/sangre.jpg",
   },
   {
     id: "tendresse",
@@ -125,7 +102,6 @@ export const projects: Project[] = [
     ano: "2026",
     status: "em-breve",
     device: "browser",
-    poster: "/projetos/tendresse.jpg",
     host: "tendresse.com.br",
   },
 ];
