@@ -68,7 +68,7 @@ function Counter({ to, suffix }: { to: number; suffix?: string }) {
 
 export function Stack() {
   return (
-    <Section id="stack" index="03" label="STACK">
+    <Section id="stack" index="04" label="STACK">
       <div className="grid gap-12 md:grid-cols-2 md:items-end">
         <h2 className="text-4xl font-medium leading-[1.05] tracking-tight text-bone md:text-6xl">
           Tecnologia que resolve,

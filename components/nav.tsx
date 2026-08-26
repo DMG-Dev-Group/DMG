@@ -5,12 +5,14 @@ import { useEffect, useState } from "react";
 import { MagneticButton } from "@/components/ui/magnetic-button";
 import { cn } from "@/lib/utils";
 
+// Ordem fechada com a DMG (Q23). "Sobre" ancora na seção de
+// Missão/Visão/Valores; o CTA "Orçamento" leva ao configurador, que vive
+// dentro dos cards de Serviços.
 const LINKS = [
-  { href: "#manifesto", label: "Manifesto", id: "manifesto" },
   { href: "#servicos", label: "Serviços", id: "servicos" },
-  { href: "#stack", label: "Stack", id: "stack" },
   { href: "#projetos", label: "Projetos", id: "projetos" },
-  { href: "#time", label: "Time", id: "time" },
+  { href: "#stack", label: "Stack", id: "stack" },
+  { href: "#sobre", label: "Sobre", id: "sobre" },
 ];
 
 export function Nav() {
@@ -77,12 +79,12 @@ export function Nav() {
 
           {/* CTA */}
           <MagneticButton
-            href="#contato"
+            href="#servicos"
             variant="ghost"
             className="px-5 py-3"
             strength={0.25}
           >
-            Contato
+            Orçamento
           </MagneticButton>
         </nav>
       </div>
