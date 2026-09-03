@@ -7,18 +7,20 @@ import {
   type LeadPayload,
 } from "@/lib/leads";
 import { gravarLead, notificarDMG } from "@/lib/lead-store";
+import { gravarNoDashboard } from "@/lib/dashboard-store";
 
 /**
  * POST /api/leads — recebe o configurador de orçamento.
  *
  * Ordem: honeypot → rate limit → validação → recálculo do total → Supabase →
- * email. O total que chega do navegador é descartado e recalculado aqui, a
- * partir dos ids: ninguém fecha um projeto de R$ 10.000 por R$ 1 mexendo no
- * devtools.
+ * email → dashboard interno. O total que chega do navegador é descartado e
+ * recalculado aqui, a partir dos ids: ninguém fecha um projeto de R$ 10.000
+ * por R$ 1 mexendo no devtools.
  *
- * Se as duas saídas falharem (serviço fora do ar, chave errada), o pedido
- * responde 502 e o formulário mostra o email direto da DMG — melhor perder o
- * registro automático do que perder o contato.
+ * O registro no dashboard é bônus, não crítico: se ele falhar, o lead já está
+ * no Supabase e a DMG já foi avisada por email — só não aparece na notificação
+ * em tempo real do painel. Por isso ele não entra no "as duas falharam" que
+ * decide o 502; só Supabase e email decidem isso.
  */
 
 export const dynamic = "force-dynamic";
@@ -80,10 +82,11 @@ export async function POST(req: NextRequest) {
   const orcamento = selecao ? calcularOrcamento(selecao) : null;
 
   // Em paralelo: uma saída não deve esperar a outra para o visitante ver o
-  // "recebemos". `allSettled` porque nenhuma das duas pode derrubar a outra.
-  const [gravacao, email] = await Promise.allSettled([
+  // "recebemos". `allSettled` porque nenhuma das três pode derrubar as outras.
+  const [gravacao, email, dashboard] = await Promise.allSettled([
     gravarLead(payload, orcamento),
     notificarDMG(payload, orcamento),
+    gravarNoDashboard(payload, orcamento),
   ]);
 
   const resultado = (r: PromiseSettledResult<{ ok: boolean; detalhe: string }>) =>
@@ -91,9 +94,11 @@ export async function POST(req: NextRequest) {
 
   const g = resultado(gravacao);
   const e = resultado(email);
+  const d = resultado(dashboard);
 
   if (!g.ok) console.error("[DMG] lead não gravado:", g.detalhe);
   if (!e.ok) console.error("[DMG] notificação não enviada:", e.detalhe);
+  if (!d.ok) console.error("[DMG] dashboard não atualizado:", d.detalhe);
 
   if (!g.ok && !e.ok) {
     return Response.json(
