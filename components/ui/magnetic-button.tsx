@@ -131,6 +131,7 @@ export function MagneticButton({
         ref={setRoot}
         href={href}
         aria-label={ariaLabel}
+        onClick={onClick}
         onPointerMove={onMove}
         onPointerLeave={onLeave}
         className={classes}
