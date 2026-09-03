@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo, useState } from "react";
+import { useRef, useMemo, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { projects } from "@/data/projects";
@@ -149,6 +149,10 @@ function makeKeyboard() {
 export function Laptop() {
   const spin = useRef<THREE.Group>(null);
   const [texIdx, setTexIdx] = useState(0);
+  // Vídeos das telas, indexados igual a `textures` — populado depois do
+  // render (useEffect), pra `useFrame` poder mexer no `currentTime` deles
+  // sem mutar o valor que saiu do `useMemo` diretamente.
+  const videosRef = useRef<(HTMLVideoElement | null)[]>([]);
 
   const textures = useMemo(
     () =>
@@ -157,14 +161,14 @@ export function Laptop() {
         if (p.demo && /\.(mp4|webm)$/.test(p.demo)) {
           // `TextureLoader` só decodifica imagem — um `.mp4` vira textura em
           // branco silenciosamente. `VideoTexture` lê de um <video> de
-          // verdade e atualiza sozinha a cada frame; nunca entra no DOM, só
-          // precisa estar tocando.
+          // verdade e atualiza sozinha a cada frame; nunca entra no DOM.
+          // Pausado de propósito: quem manda o `currentTime` é o scroll —
+          // o `useFrame` abaixo lê o vídeo de volta em `texture.image`.
           const video = document.createElement("video");
           video.src = p.demo;
-          video.loop = true;
           video.muted = true;
           video.playsInline = true;
-          video.play().catch(() => {});
+          video.preload = "auto";
           t = new THREE.VideoTexture(video);
         } else if (p.demo) {
           t = new THREE.TextureLoader().load(p.demo);
@@ -184,11 +188,29 @@ export function Laptop() {
 
   const keyboard = useMemo(() => makeKeyboard(), []);
 
+  useEffect(() => {
+    videosRef.current = textures.map((t) =>
+      t instanceof THREE.VideoTexture ? (t.image as HTMLVideoElement) : null,
+    );
+  }, [textures]);
+
   useFrame(() => {
     const p = projectsScroll.progress;
     if (spin.current) spin.current.rotation.y = p * TURNS * TWO_PI;
     const idx = Math.min(N - 1, Math.max(0, Math.round(p * (N - 1))));
     setTexIdx((prev) => (prev === idx ? prev : idx));
+
+    // Janela de scroll "dona" desse índice: mesma matemática do
+    // Math.round acima, só que como intervalo contínuo em vez de degrau —
+    // dentro dela, `local` anda 0->1 e escrubba o vídeo desse projeto.
+    const video = videosRef.current[idx];
+    if (video && Number.isFinite(video.duration) && video.duration > 0 && TURNS > 0) {
+      const span = 1 / TURNS;
+      const start = Math.max(0, idx / TURNS - span / 2);
+      const end = Math.min(1, idx / TURNS + span / 2);
+      const local = end > start ? Math.min(1, Math.max(0, (p - start) / (end - start))) : 0;
+      video.currentTime = local * video.duration;
+    }
   });
 
   return (

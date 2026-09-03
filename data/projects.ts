@@ -11,16 +11,27 @@ export type Project = {
   status: ProjectStatus;
   device: "browser" | "phone" | "laptop";
   /**
-   * Imagem estática, gif ou vídeo (`.mp4`/`.webm`, tocado em loop mudo) dentro
-   * do device frame — a extensão do arquivo decide como o `DeviceFrame`
-   * renderiza. Sem ela, a seção mostra um placeholder com o nome do projeto e
-   * "preview em breve" — que é um estado digno, não um buraco. Prefira vídeo
-   * a gif: mesma ideia de loop, com muito mais qualidade por byte (o gif do
-   * CNM tinha 512KB pra um resultado turvo; o `.mp4` equivalente ficou com
-   * 441KB em 30fps nítido). Pra plugar: solte o arquivo em `public/projetos/`
-   * e aponte aqui. Se for gravar, corta antes de qualquer trecho de
-   * carregamento/erro do site gravado — ele entra no loop junto (foi o que
-   * aconteceu com o primeiro gif do Flora Beauty).
+   * Imagem estática, gif ou vídeo (`.mp4`/`.webm`, mudo) dentro do device
+   * frame — a extensão do arquivo decide como `DeviceFrame`/`Laptop`
+   * renderizam. Sem ela, a seção mostra um placeholder com o nome do projeto
+   * e "preview em breve" — que é um estado digno, não um buraco. Prefira
+   * vídeo a gif: mesma ideia, com muito mais qualidade por byte (o gif do
+   * CNM tinha 512KB pra um resultado turvo).
+   *
+   * Dois lugares mostram essa demo, com comportamento diferente de
+   * propósito: o `DeviceFrame` (fallback 2D, mobile/sem WebGL) toca em loop
+   * normal; a tela do notebook 3D (`Laptop`) não deixa o vídeo tocar sozinho
+   * — ela pausa e avança o `currentTime` conforme o scroll (pedido da DMG:
+   * "o vídeo vai seguir o scroll"). Isso exige o arquivo com keyframe em
+   * TODO frame (`-g 1` no ffmpeg) pra buscar qualquer ponto ser barato —
+   * sem isso, cada passo do scroll pede decodificar desde o keyframe
+   * anterior e trava. É por isso que o `.mp4` do CNM (2,3MB) é maior que um
+   * vídeo comum do mesmo tamanho/duração — o trade-off vale a pena aqui.
+   *
+   * Pra plugar: solte o arquivo em `public/projetos/` e aponte aqui. Se for
+   * gravar, corta antes de qualquer trecho de carregamento/erro do site
+   * gravado — ele entra no loop/scrub junto (foi o que aconteceu com o
+   * primeiro gif do Flora Beauty).
    */
   demo?: string;
   /** Domínio exibido na barra do device frame. */
