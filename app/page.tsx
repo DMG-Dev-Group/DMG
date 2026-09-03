@@ -1,6 +1,7 @@
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { IntroSplash } from "@/components/intro/intro-splash";
+import { Preload3D } from "@/components/core/preload-3d";
 import { Hero } from "@/components/sections/hero";
 import { MissaoVisaoValores } from "@/components/sections/missao-visao-valores";
 import { Servicos } from "@/components/sections/servicos";
@@ -19,6 +20,7 @@ export default function Home() {
   return (
     <>
       <IntroSplash />
+      <Preload3D />
       <Nav />
       <main>
         <Hero />
