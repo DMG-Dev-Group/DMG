@@ -11,10 +11,12 @@ export type Project = {
   status: ProjectStatus;
   device: "browser" | "phone" | "laptop";
   /**
-   * Demonstração em loop (gif) dentro do device frame. Sem ela, a seção mostra
-   * um placeholder com o nome do projeto e "preview em breve" — que é um
-   * estado digno, não um buraco. Para plugar: solte o arquivo em
-   * `public/projetos/` e aponte aqui.
+   * Imagem estática ou gif em loop dentro do device frame. Sem ela, a seção
+   * mostra um placeholder com o nome do projeto e "preview em breve" — que é
+   * um estado digno, não um buraco. Para plugar: solte o arquivo em
+   * `public/projetos/` e aponte aqui. Se for gravar um gif, corta antes de
+   * qualquer trecho de carregamento/erro do site gravado — ele entra no loop
+   * junto (foi o que aconteceu com o primeiro gif do Flora Beauty).
    */
   demo?: string;
   /** Domínio exibido na barra do device frame. */
@@ -53,7 +55,7 @@ export const projects: Project[] = [
       "Loja em produção: catálogo, carrinho, checkout e login (e-mail + Google).",
     status: "producao",
     device: "browser",
-    demo: "/projetos/flora-beauty.gif",
+    demo: "/projetos/flora-beauty.png",
     host: "flora-5754a.web.app",
     url: "https://flora-5754a.web.app",
   },

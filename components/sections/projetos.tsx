@@ -38,7 +38,6 @@ function DeviceFrame({ project }: { project: Project }) {
             src={project.demo}
             alt={`Demonstração de ${project.nome}`}
             className="absolute inset-0 h-full w-full object-cover"
-            loading="lazy"
           />
         ) : (
           <>

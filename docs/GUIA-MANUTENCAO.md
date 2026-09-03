@@ -178,13 +178,14 @@ portfólio). O nome do arquivo é citado no componente ou no `data/` da seção.
 
 ## Configurador de orçamento
 
-O funil principal do site. Três arquivos:
+O funil principal do site. Quatro arquivos:
 
 | Arquivo | Responsabilidade |
 |---|---|
 | `components/ui/service-modal.tsx` | A interface: os dois níveis, o total ao vivo, o formulário. |
 | `app/api/leads/route.ts` | Recebe o POST: honeypot, validação, rate limit, recálculo. |
-| `lib/lead-store.ts` | As saídas: gravar no Supabase e avisar a DMG por email. |
+| `lib/lead-store.ts` | Grava no Supabase e avisa a DMG por email. |
+| `lib/dashboard-store.ts` | Avisa o Dashboard interno em tempo real (ver seção própria abaixo). |
 
 Detalhe que importa: **o total é recalculado no servidor**, a partir dos ids
 enviados. O valor que o navegador mostrou é descartado. Ninguém fecha um
@@ -276,6 +277,40 @@ O formulário tem aceite obrigatório e link para `/privacidade`
 (`app/privacidade/page.tsx`). Se mudar o que é coletado ou onde é guardado,
 essa página tem que mudar junto — ela é a promessa que a DMG fez a quem
 preencheu.
+
+### Integração com o Dashboard interno
+
+Cada lead também é escrito no Firestore do painel interno da DMG
+(`dmgdev-group`, repo `DMG-Dev-Group/Dashboard`), que já observa esse banco em
+tempo real. Sem endpoint novo, sem webhook: `lib/dashboard-store.ts` grava
+direto em duas coleções que o painel já escuta —
+
+- `leads` — o registro completo. Alimenta a tela **Leads** do painel e o sino
+  de notificações.
+- `atividades` — uma linha curta (`"Novo lead — Fulano — Categoria — R$ X"`),
+  no mesmo formato que o painel já usa. Aparece na Timeline da Visão Geral
+  sem precisar mexer em nada lá.
+
+**Variável:** `FIREBASE_SERVICE_ACCOUNT_KEY` — o conteúdo inteiro do JSON de
+uma conta de serviço, numa linha só, entre aspas simples. Como conseguir:
+
+1. Firebase Console → projeto **dmgdev-group** → ⚙️ Configurações do projeto
+   → **Contas de serviço** → "Gerar nova chave privada". Baixa um `.json`.
+2. Copia o conteúdo do arquivo inteiro, sem formatar, entre aspas simples:
+   `FIREBASE_SERVICE_ACCOUNT_KEY='{"type":"service_account",...}'`
+
+⚠️ Tão sensível quanto a `SUPABASE_SERVICE_ROLE_KEY` — dá acesso de
+administrador ao banco do painel inteiro, não só à coleção `leads`. Nunca
+comitar, nunca colar num `NEXT_PUBLIC_*`.
+
+Sem essa variável, o lead segue indo pro Supabase e pro email normalmente —
+só não aparece no painel. É a saída menos crítica das três, por isso não entra
+no "se as duas falharem, erro 502" da API.
+
+**Do lado do Dashboard:** o painel só precisou aprender a escutar a coleção
+`leads` — uma linha a mais na lista que o `StoreProvider` já observava
+(`projetos`, `clientes`, `receitas`, `eventos`, `atividades`). Documentado no
+próprio repositório do Dashboard.
 
 ## Acessibilidade e performance
 

@@ -102,25 +102,28 @@ function corpoDoEmail(payload: LeadPayload, orcamento: Orcamento | null) {
 
   par("Modalidade", payload.modalidade === "aluguel" ? "ALUGUEL (mensal)" : "Compra");
 
-  if (payload.modalidade === "aluguel" && orcamento?.mensal) {
-    par(
-      "Plano",
-      `${orcamento.mensal.descricao} — ${formatarBRL(orcamento.mensal.valor)}/mês`,
-    );
-    par(
-      "Valor de compra equivalente",
-      orcamento.sobOrcamento ? "sob orçamento" : formatarBRL(orcamento.total),
-    );
-  } else if (orcamento && !orcamento.sobOrcamento) {
+  // O que a pessoa configurou (base + módulos + multiplicadores) aparece
+  // sempre, comprando ou alugando — o aluguel só ACRESCENTA a linha do plano
+  // no fim. Antes, o caminho de aluguel parava na linha do plano e nunca
+  // dizia o que exatamente ela tinha marcado: a DMG via "alugar, R$ 400/mês"
+  // sem saber que era um site institucional com blog e 3 páginas extras.
+  if (orcamento && !orcamento.sobOrcamento) {
     par("Base", `${orcamento.base.descricao} — ${formatarBRL(orcamento.base.valor)}`);
     for (const m of orcamento.modulos) par("Módulo", `${m.descricao} — ${formatarBRL(m.valor)}`);
     for (const a of orcamento.acrescimos) par("Acréscimo", `${a.descricao} — ${formatarBRL(a.valor)}`);
     par(
-      "TOTAL",
+      payload.modalidade === "aluguel" ? "Valor de compra equivalente" : "TOTAL",
       `${orcamento.aPartirDe ? "a partir de " : ""}${formatarBRL(orcamento.total)}`,
     );
   } else {
     par("TOTAL", "sob orçamento");
+  }
+
+  if (payload.modalidade === "aluguel" && orcamento?.mensal) {
+    par(
+      "Plano escolhido",
+      `${orcamento.mensal.descricao} — ${formatarBRL(orcamento.mensal.valor)}/mês`,
+    );
   }
 
   const comentario = payload.comentario.trim();

@@ -65,7 +65,7 @@ O bloco de perguntas foi respondido. O que sobrou:
 | Assunto | Situação |
 |---|---|
 | Domínio / deploy | Não existe deploy ativo hoje. `metadataBase` está em `https://damage.group` como placeholder, marcado com `TODO(DMG)` em `app/layout.tsx`. Trocar antes de publicar. |
-| Supabase e Resend | Contas ainda não criadas. Código, SQL, `.env.example` e passo a passo prontos no guia — é criar e colar as chaves. |
+| Supabase, Resend e Firebase (Dashboard) | Contas do site criadas e testadas de ponta a ponta pela DMG durante o QA (26/08). Código, SQL, `.env.example` e passo a passo prontos no guia. |
 | GitHub e LinkedIn | Os dois links do footer ainda apontam para `#`; faltam as URLs dos perfis. |
 | Fotos e vídeos do portfólio | Só Flora Beauty e CNM têm gravação. SANGRE e Tendresse mostram o placeholder "preview em breve". |
 | Idades dos fundadores | Confirmadas (18/19/18) e **envelhecem sozinhas** — viram manutenção anual. |
@@ -84,6 +84,40 @@ O bloco de perguntas foi respondido. O que sobrou:
 | Q21 | Flora Beauty, CNM, SANGRE, Tendresse. AMIRA fora | `data/projects.ts` |
 | Q22 | WhatsApp +55 98 7028-6636 na faixa de contato e no footer | `data/contato.ts` |
 | Q27 | Só "Urgência" no hardware; "Design exclusivo" não se aplica | `data/services.ts` (`MULT_HARDWARE`) |
+
+## Integração com o Dashboard interno (26/08)
+
+Depois do QA da DMG confirmar Supabase e email funcionando de ponta a ponta,
+surgiu um pedido novo: unificar o site com o painel interno da DMG
+(`DMG-Dev-Group/Dashboard`, `dmgdev-group` no Firebase) — receber notificação
+lá quando um lead chega, e não só no email.
+
+Investigação (só leitura, antes de mexer): o Dashboard já roda em cima de um
+padrão de tempo real (`StoreProvider` escutando Firestore via `onSnapshot`) e
+o hook de notificações já trazia o comentário *"pedido de contato pelo site...
+entra aqui conforme os gatilhos forem implementados"* — a peça estava
+desenhada, só faltava a ligação. Decisão: em vez de webhook ou endpoint novo,
+o site escreve direto nas coleções que o painel já observa. O Dashboard só
+precisou de uma linha a mais na lista de coleções escutadas.
+
+- `lib/dashboard-store.ts` (novo, neste repo): grava em `leads` e `atividades`
+  via Firebase Admin, em paralelo com Supabase e email — nenhuma das três
+  saídas bloqueia as outras.
+- No repo do Dashboard: `types.ts` (tipo `Lead`), `StoreProvider.tsx`
+  (`"leads"` na lista de coleções), `useNotificacoes.ts` (leads recentes viram
+  notificação), `navItems.ts` (item "Leads" no menu) e duas telas novas —
+  `LeadsView`/`LeadsViewClassic`, uma pra cada visual do painel — porque cada
+  view do Dashboard já existe em duas peles e não fazia sentido a página de
+  leads ser a exceção.
+
+Verificado com a chave de serviço real (não simulada): escrita direta no
+Firestore de produção confirmada com leitura de volta; `npm run build` do
+Dashboard compilando as duas telas novas (`_auth.leads`) e a rota registrada
+certo na árvore de rotas gerada; `tsc --noEmit` e lint limpos nos arquivos
+tocados (o lint do Dashboard já tinha ~90 problemas pré-existentes em
+arquivos que este trabalho não tocou — não é regressão). Documentos de teste
+ficaram no Firestore de propósito, pra DMG ver com os próprios olhos antes de
+apagar.
 
 ## Verificações feitas
 
@@ -110,3 +144,52 @@ botão magnético movido para um ref em vez de se referenciar por nome; e
 
 Cada um foi conferido no navegador antes de entrar — o botão magnético foi
 medido antes e depois com o mesmo roteiro e bate dígito a dígito.
+
+## QA final ao vivo (03/09)
+
+Rodada de ajustes levantados pela DMG testando o site rodando de verdade
+(`npm run dev`) na própria máquina, depois do Dashboard já integrado.
+
+- **Telefone do lead formatado** no Dashboard (`+55 (DDD) 9####-####`) nas
+  duas views de Lead — pedido isolado, sem relação com o resto desta lista.
+- **Notebook de Projetos e explosão de cacos do Climax carregando tarde
+  demais**: os dois só existiam como chunk `next/dynamic(ssr:false)`, buscado
+  e compilado pela primeira vez exatamente quando a pessoa rolava até a
+  seção — em dev, o tempo de compilação chegava a travar o navegador a ponto
+  da intro perder sincronia e reaparecer por cima da seção de Projetos (lido
+  a princípio como "erro insano de animação"). `components/core/preload-3d.tsx`
+  aquece os dois chunks em `requestIdleCallback` assim que o site abre, sem
+  competir com a intro. Verificado com Playwright: os chunks já estão em rede
+  ~3s após abrir o site, e o mount real em Projetos caiu de buscar um chunk
+  novo pra resolver em 9ms.
+- **Gif de demonstração dos projetos com o mesmo sintoma** (piscava vazio
+  antes de aparecer): tinha `loading="lazy"` — correto pra scroll normal, mas
+  essa seção usa pin do GSAP e aparece de uma vez, sem o tempo de
+  "aproximação" que o lazy-load pressupõe. Tirado o lazy; `preload-3d.tsx`
+  também aquece o gif de cada projeto que tiver `demo` definido.
+- **Gif do Flora Beauty tinha só 3 frames reais no arquivo inteiro**, e dois
+  deles mostravam a página trava em "Carregando produto..." — sobrava mais
+  tempo de loop nesse estado quebrado do que no conteúdo bom. Confirmado
+  quadro a quadro com `ffmpeg`; o site ao vivo (`flora-5754a.web.app`) não é
+  alcançável a partir deste ambiente pra regravar. Solução: extraído o único
+  frame bom como `public/projetos/flora-beauty.png`, `data/projects.ts`
+  aponta pra ele, e o `.gif` quebrado saiu do repo. Fica registrado no tipo
+  `Project.demo`: quem gravar o próximo gif, corta antes de qualquer erro de
+  carregamento do site gravado — ele entra no loop junto.
+- **Navbar sem menu abaixo de 768px**: a lista de links era só
+  `hidden md:flex`, sem substituto — sobrava um vão vazio entre a logo e o
+  botão Orçamento em qualquer tela menor (inclusive celular). Adicionado
+  menu hamburguer (`components/nav.tsx`) no mesmo padrão de overlay do
+  `ServiceModal`/`IntroSplash` — trava o Lenis, fecha no ESC e no toque fora.
+  De brinde, corrigido um bug do `MagneticButton`: com `href`, o `onClick`
+  passado nunca era aplicado (só funcionava sem link) — o menu mobile
+  precisa dele pra fechar ao clicar no CTA "Orçamento".
+- **Navbar fora da ordem das seções e sem link pro Contato**: a lista de
+  links (`Serviços, Projetos, Stack, Sobre`) não batia com a ordem real de
+  `app/page.tsx` (Sobre -> Serviços -> Stack -> Projetos), e a seção Contato
+  nunca tinha entrado na navegação. Reordenado pra bater com o scroll real e
+  adicionado o link "Contato".
+
+Verificado com `npx tsc --noEmit`, `npx eslint` nos arquivos tocados e
+`npm run build` limpos a cada mudança, mais navegador real via Playwright
+(Chromium) em várias larguras de tela para a navbar e o menu mobile.
