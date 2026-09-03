@@ -11,12 +11,16 @@ export type Project = {
   status: ProjectStatus;
   device: "browser" | "phone" | "laptop";
   /**
-   * Imagem estática ou gif em loop dentro do device frame. Sem ela, a seção
-   * mostra um placeholder com o nome do projeto e "preview em breve" — que é
-   * um estado digno, não um buraco. Para plugar: solte o arquivo em
-   * `public/projetos/` e aponte aqui. Se for gravar um gif, corta antes de
-   * qualquer trecho de carregamento/erro do site gravado — ele entra no loop
-   * junto (foi o que aconteceu com o primeiro gif do Flora Beauty).
+   * Imagem estática, gif ou vídeo (`.mp4`/`.webm`, tocado em loop mudo) dentro
+   * do device frame — a extensão do arquivo decide como o `DeviceFrame`
+   * renderiza. Sem ela, a seção mostra um placeholder com o nome do projeto e
+   * "preview em breve" — que é um estado digno, não um buraco. Prefira vídeo
+   * a gif: mesma ideia de loop, com muito mais qualidade por byte (o gif do
+   * CNM tinha 512KB pra um resultado turvo; o `.mp4` equivalente ficou com
+   * 441KB em 30fps nítido). Pra plugar: solte o arquivo em `public/projetos/`
+   * e aponte aqui. Se for gravar, corta antes de qualquer trecho de
+   * carregamento/erro do site gravado — ele entra no loop junto (foi o que
+   * aconteceu com o primeiro gif do Flora Beauty).
    */
   demo?: string;
   /** Domínio exibido na barra do device frame. */
@@ -71,7 +75,7 @@ export const projects: Project[] = [
       "Classificação calculada automaticamente a partir dos resultados; notícias, calendário, hall da fama e equipes gerenciados pelo admin.",
     status: "producao",
     device: "browser",
-    demo: "/projetos/cnm.gif",
+    demo: "/projetos/cnm.mp4",
     host: "cnm-rose.vercel.app",
     url: "https://cnm-rose.vercel.app",
   },

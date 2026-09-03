@@ -33,12 +33,23 @@ function DeviceFrame({ project }: { project: Project }) {
       {/* screen — real demo when available, else an elegant poster placeholder */}
       <div className="relative aspect-[16/10] w-full overflow-hidden bg-void">
         {project.demo ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={project.demo}
-            alt={`Demonstração de ${project.nome}`}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
+          /\.(mp4|webm)$/.test(project.demo) ? (
+            <video
+              src={project.demo}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={project.demo}
+              alt={`Demonstração de ${project.nome}`}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          )
         ) : (
           <>
             <div aria-hidden className="absolute inset-0 bloom-red opacity-40" />

@@ -153,16 +153,28 @@ export function Laptop() {
   const textures = useMemo(
     () =>
       projects.map((p) => {
-        const t = p.demo
-          ? (() => {
-              const tex = new THREE.TextureLoader().load(p.demo!);
-              tex.colorSpace = THREE.SRGBColorSpace;
-              return tex;
-            })()
-          : makePlaceholder(
-              p.nome,
-              p.status === "desenvolvimento" ? "EM DESENVOLVIMENTO" : "EM BREVE",
-            );
+        let t: THREE.Texture;
+        if (p.demo && /\.(mp4|webm)$/.test(p.demo)) {
+          // `TextureLoader` só decodifica imagem — um `.mp4` vira textura em
+          // branco silenciosamente. `VideoTexture` lê de um <video> de
+          // verdade e atualiza sozinha a cada frame; nunca entra no DOM, só
+          // precisa estar tocando.
+          const video = document.createElement("video");
+          video.src = p.demo;
+          video.loop = true;
+          video.muted = true;
+          video.playsInline = true;
+          video.play().catch(() => {});
+          t = new THREE.VideoTexture(video);
+        } else if (p.demo) {
+          t = new THREE.TextureLoader().load(p.demo);
+        } else {
+          t = makePlaceholder(
+            p.nome,
+            p.status === "desenvolvimento" ? "EM DESENVOLVIMENTO" : "EM BREVE",
+          );
+        }
+        t.colorSpace = THREE.SRGBColorSpace;
         t.center.set(0.5, 0.5);
         t.rotation = SCREEN_ROT;
         return t;
