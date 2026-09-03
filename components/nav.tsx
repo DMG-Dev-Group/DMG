@@ -8,12 +8,12 @@ import { getLenis } from "@/components/smooth-scroll";
 import { cn } from "@/lib/utils";
 
 // Mesma ordem em que as seções aparecem no scroll (app/page.tsx): Sobre
-// (Missão/Visão/Valores) -> Serviços -> Stack -> Projetos -> Contato. O CTA
-// "Orçamento" leva direto ao configurador, que vive dentro dos cards de
-// Serviços — por isso ele fica de fora da lista e vira o botão à parte.
+// (Missão/Visão/Valores) -> Serviços -> Stack -> Projetos -> Contato.
+// "Serviços" não tem link próprio na lista: o CTA "Orçamento" já leva pro
+// mesmo `#servicos` (é lá que fica o configurador), então repetir o destino
+// como item de texto só duplicava a mesma seta pro mesmo lugar.
 const LINKS = [
   { href: "#sobre", label: "Sobre", id: "sobre" },
-  { href: "#servicos", label: "Serviços", id: "servicos" },
   { href: "#stack", label: "Stack", id: "stack" },
   { href: "#projetos", label: "Projetos", id: "projetos" },
   { href: "#contato", label: "Contato", id: "contato" },
