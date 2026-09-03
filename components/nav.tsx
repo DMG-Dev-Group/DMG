@@ -7,14 +7,16 @@ import { MagneticButton } from "@/components/ui/magnetic-button";
 import { getLenis } from "@/components/smooth-scroll";
 import { cn } from "@/lib/utils";
 
-// Ordem fechada com a DMG (Q23). "Sobre" ancora na seção de
-// Missão/Visão/Valores; o CTA "Orçamento" leva ao configurador, que vive
-// dentro dos cards de Serviços.
+// Mesma ordem em que as seções aparecem no scroll (app/page.tsx): Sobre
+// (Missão/Visão/Valores) -> Serviços -> Stack -> Projetos -> Contato. O CTA
+// "Orçamento" leva direto ao configurador, que vive dentro dos cards de
+// Serviços — por isso ele fica de fora da lista e vira o botão à parte.
 const LINKS = [
-  { href: "#servicos", label: "Serviços", id: "servicos" },
-  { href: "#projetos", label: "Projetos", id: "projetos" },
-  { href: "#stack", label: "Stack", id: "stack" },
   { href: "#sobre", label: "Sobre", id: "sobre" },
+  { href: "#servicos", label: "Serviços", id: "servicos" },
+  { href: "#stack", label: "Stack", id: "stack" },
+  { href: "#projetos", label: "Projetos", id: "projetos" },
+  { href: "#contato", label: "Contato", id: "contato" },
 ];
 
 export function Nav() {
